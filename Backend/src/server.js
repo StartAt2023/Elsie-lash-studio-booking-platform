@@ -2,6 +2,7 @@ import express from "express";
 import cors from "cors";
 
 import { config } from "./config/env.js";
+import { connectDB } from "./config/database.js";
 import bookingRoutes from "./routes/bookingRoutes.js";
 import customerRoutes from "./routes/customerRoutes.js";
 import serviceRoutes from "./routes/serviceRoutes.js";
@@ -28,7 +29,12 @@ app.use("/api/gallery", galleryRoutes);
 app.use(notFound);
 app.use(errorHandler);
 
-app.listen(config.port, () => {
-  console.log(`Backend listening on http://localhost:${config.port}`);
-});
+async function start() {
+  await connectDB();
+  app.listen(config.port, () => {
+    console.log(`Backend listening on http://localhost:${config.port}`);
+  });
+}
+
+start();
 

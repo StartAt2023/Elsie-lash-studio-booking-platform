@@ -9,12 +9,11 @@ const CATEGORIES: GalleryCategory[] = ["All", "Classic", "Hybrid", "Volume"];
 export interface GalleryItem {
   id: string;
   category: Exclude<GalleryCategory, "All">;
-  /** 添加图片时在此处填写路径，例如 "/gallery/classic-1.jpg" */
   src?: string;
   alt: string;
 }
 
-const GALLERY_ITEMS: GalleryItem[] = [
+const PLACEHOLDER_ITEMS: GalleryItem[] = [
   { id: "1", category: "Classic", alt: "Classic lash style 1" },
   { id: "2", category: "Classic", alt: "Classic lash style 2" },
   { id: "3", category: "Classic", alt: "Classic lash style 3" },
@@ -40,14 +39,20 @@ function ImagePlaceholderBox({ className }: { className?: string }) {
   );
 }
 
-export default function Gallery() {
+interface GalleryProps {
+  /** Items from API (GET /api/gallery). When empty or undefined, placeholder grid is shown. */
+  items?: GalleryItem[];
+}
+
+export default function Gallery({ items = [] }: GalleryProps) {
   const [category, setCategory] = useState<GalleryCategory>("All");
   const [lightboxItem, setLightboxItem] = useState<GalleryItem | null>(null);
 
+  const list = items.length > 0 ? items : PLACEHOLDER_ITEMS;
   const filtered =
     category === "All"
-      ? GALLERY_ITEMS
-      : GALLERY_ITEMS.filter((item) => item.category === category);
+      ? list
+      : list.filter((item) => item.category === category);
 
   const closeLightbox = useCallback(() => setLightboxItem(null), []);
 
@@ -66,7 +71,6 @@ export default function Gallery() {
 
   return (
     <>
-      {/* Category filter */}
       <div className="flex flex-wrap justify-center gap-3">
         {CATEGORIES.map((cat) => (
           <button
@@ -84,7 +88,6 @@ export default function Gallery() {
         ))}
       </div>
 
-      {/* Grid */}
       <div className="mt-14 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
         {filtered.map((item) => (
           <button
@@ -109,7 +112,6 @@ export default function Gallery() {
         ))}
       </div>
 
-      {/* Lightbox */}
       {lightboxItem && (
         <div
           className="fixed inset-0 z-50 flex items-center justify-center bg-charcoal/70 p-5"

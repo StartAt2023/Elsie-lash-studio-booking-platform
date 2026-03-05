@@ -1,8 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { createBooking, getServices, type Booking, type Service, type ApiError } from "@/lib/api";
 
-const SERVICES = [
+const REQUIRED_SERVICE_OPTIONS = [
   "Classic Lashes",
   "Volume Lashes",
   "Lash Lift & Tint",
@@ -11,7 +12,7 @@ const SERVICES = [
 ];
 
 export default function BookingForm() {
-  const [submitted, setSubmitted] = useState(false);
+  const [services, setServices] = useState<Service[]>([]);
   const [formData, setFormData] = useState({
     fullName: "",
     phone: "",
@@ -19,44 +20,93 @@ export default function BookingForm() {
     date: "",
     notes: "",
   });
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [confirmation, setConfirmation] = useState<Booking | null>(null);
+
+  useEffect(() => {
+    getServices()
+      .then(setServices)
+      .catch(() => setServices([]));
+  }, []);
+
+  const serviceOptions = services.length > 0
+    ? services.map((s) => s.name)
+    : REQUIRED_SERVICE_OPTIONS;
 
   function handleChange(
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
   ) {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
+    setError(null);
   }
 
-  function handleSubmit(e: React.FormEvent) {
+  function validate(): string | null {
+    const { fullName, phone, service, date } = formData;
+    const t = (s: string) => s.trim();
+    if (!t(fullName)) return "Please enter your full name.";
+    if (!t(phone)) return "Please enter your phone number.";
+    if (!t(service)) return "Please select a service.";
+    if (!t(date)) return "Please select a preferred date.";
+    return null;
+  }
+
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    setSubmitted(true);
+    const validationError = validate();
+    if (validationError) {
+      setError(validationError);
+      return;
+    }
+    setError(null);
+    setLoading(true);
+    try {
+      const booking = await createBooking({
+        fullName: formData.fullName.trim(),
+        phone: formData.phone.trim(),
+        service: formData.service.trim(),
+        date: formData.date.trim(),
+        notes: formData.notes?.trim() || "",
+      });
+      setConfirmation(booking);
+      setFormData({
+        fullName: "",
+        phone: "",
+        service: "",
+        date: "",
+        notes: "",
+      });
+    } catch (err) {
+      const apiErr = err as ApiError;
+      setError(apiErr?.message || "Something went wrong. Please try again.");
+    } finally {
+      setLoading(false);
+    }
   }
 
-  if (submitted) {
+  if (confirmation) {
     return (
       <div className="rounded-2xl border border-borderSoft/60 bg-white p-10 text-center shadow-soft sm:p-14">
         <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-gold text-cream shadow-soft">
           <CheckIcon />
         </div>
         <h2 className="mt-8 font-serif text-2xl font-semibold tracking-tight text-charcoal sm:text-3xl">
-          Request received
+          Booking received
         </h2>
         <p className="mt-4 leading-relaxed text-muted">
-          Thank you, {formData.fullName || "there"}! We&apos;ll be in touch soon
-          to confirm your appointment.
+          Thank you, {confirmation.fullName}. We&apos;ll be in touch to confirm.
         </p>
+        <div className="mt-6 rounded-xl border border-borderSoft/60 bg-cream/30 px-6 py-4 text-left">
+          <p className="text-sm font-medium text-charcoal">Confirmation summary</p>
+          <p className="mt-1 text-sm text-muted">Booking #{confirmation.id}</p>
+          <p className="mt-1 text-sm text-muted">Service: {confirmation.service}</p>
+          <p className="mt-1 text-sm text-muted">Preferred date: {confirmation.date}</p>
+          <p className="mt-1 text-sm text-muted">Phone: {confirmation.phone}</p>
+        </div>
         <button
           type="button"
-          onClick={() => {
-            setSubmitted(false);
-            setFormData({
-              fullName: "",
-              phone: "",
-              service: "",
-              date: "",
-              notes: "",
-            });
-          }}
+          onClick={() => setConfirmation(null)}
           className="mt-10 rounded-full bg-gold px-8 py-3.5 text-sm font-medium tracking-luxury text-cream shadow-soft transition hover:bg-[#b5965f] focus:outline-none focus:ring-2 focus:ring-gold focus:ring-offset-2 focus:ring-offset-cream"
         >
           Submit another request
@@ -70,6 +120,14 @@ export default function BookingForm() {
       onSubmit={handleSubmit}
       className="rounded-2xl border border-borderSoft/60 bg-white p-8 shadow-soft sm:p-10"
     >
+      {error && (
+        <div className="mb-6 rounded-xl border border-borderSoft/60 bg-cream/50 p-4 text-sm text-charcoal">
+          <p className="font-medium">Please fix the following:</p>
+          <p className="mt-1 text-muted">{error}</p>
+          <p className="mt-2 text-muted">You can correct the details above and submit again.</p>
+        </div>
+      )}
+
       <div className="space-y-8">
         <div>
           <label
@@ -104,7 +162,7 @@ export default function BookingForm() {
             required
             value={formData.phone}
             onChange={handleChange}
-            placeholder="(061) 123456789"
+            placeholder="e.g. 0412345678 (Australia)"
             className="w-full rounded-xl border border-borderSoft/60 bg-cream/50 px-4 py-3.5 text-charcoal placeholder-muted focus:border-gold focus:outline-none focus:ring-2 focus:ring-gold/20"
           />
         </div>
@@ -125,7 +183,7 @@ export default function BookingForm() {
             className="w-full rounded-xl border border-borderSoft/60 bg-cream/50 px-4 py-3.5 text-charcoal focus:border-gold focus:outline-none focus:ring-2 focus:ring-gold/20"
           >
             <option value="">Select a service</option>
-            {SERVICES.map((s) => (
+            {serviceOptions.map((s) => (
               <option key={s} value={s}>
                 {s}
               </option>
@@ -149,6 +207,7 @@ export default function BookingForm() {
             onChange={handleChange}
             className="w-full rounded-xl border border-borderSoft/60 bg-cream/50 px-4 py-3.5 text-charcoal focus:border-gold focus:outline-none focus:ring-2 focus:ring-gold/20"
           />
+          <p className="mt-1 text-xs text-muted">Times are in Australia/Sydney.</p>
         </div>
 
         <div>
@@ -172,9 +231,10 @@ export default function BookingForm() {
 
       <button
         type="submit"
-        className="mt-10 w-full rounded-full bg-gold py-4 text-sm font-medium tracking-luxury text-cream shadow-soft transition hover:bg-[#b5965f] focus:outline-none focus:ring-2 focus:ring-gold focus:ring-offset-2 focus:ring-offset-cream sm:w-auto sm:px-12"
+        disabled={loading}
+        className="mt-10 w-full rounded-full bg-gold py-4 text-sm font-medium tracking-luxury text-cream shadow-soft transition hover:bg-[#b5965f] focus:outline-none focus:ring-2 focus:ring-gold focus:ring-offset-2 focus:ring-offset-cream disabled:opacity-60 sm:w-auto sm:px-12"
       >
-        Submit booking request
+        {loading ? "Submitting…" : "Submit booking request"}
       </button>
     </form>
   );
