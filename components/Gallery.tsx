@@ -32,10 +32,10 @@ const GALLERY_ITEMS: GalleryItem[] = [
 function ImagePlaceholderBox({ className }: { className?: string }) {
   return (
     <div
-      className={`flex items-center justify-center bg-gradient-to-br from-pink-100 to-pink-200/80 ${className ?? ""}`}
+      className={`flex items-center justify-center rounded-2xl border border-borderSoft/60 bg-white shadow-soft ${className ?? ""}`}
       aria-hidden
     >
-      <span className="text-pink-400/60 text-4xl font-serif">✦</span>
+      <span className="font-serif text-4xl text-gold/50">✦</span>
     </div>
   );
 }
@@ -67,16 +67,16 @@ export default function Gallery() {
   return (
     <>
       {/* Category filter */}
-      <div className="flex flex-wrap justify-center gap-2 sm:gap-3">
+      <div className="flex flex-wrap justify-center gap-3">
         {CATEGORIES.map((cat) => (
           <button
             key={cat}
             type="button"
             onClick={() => setCategory(cat)}
-            className={`rounded-full px-4 py-2 text-sm font-medium transition sm:px-5 sm:py-2.5 ${
+            className={`rounded-full px-5 py-2.5 text-sm font-medium tracking-luxury transition ${
               category === cat
-                ? "bg-pink-500 text-white shadow-md"
-                : "bg-pink-100 text-pink-800 hover:bg-pink-200"
+                ? "bg-gold text-cream shadow-soft"
+                : "border border-borderSoft/60 bg-white text-muted shadow-soft hover:border-gold hover:text-charcoal"
             }`}
           >
             {cat}
@@ -84,14 +84,14 @@ export default function Gallery() {
         ))}
       </div>
 
-      {/* Responsive grid - 每个位置是一个框，有 src 时显示图片 */}
-      <div className="mt-10 grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-5 lg:grid-cols-3 xl:gap-6">
+      {/* Grid */}
+      <div className="mt-14 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
         {filtered.map((item) => (
           <button
             key={item.id}
             type="button"
             onClick={() => setLightboxItem(item)}
-            className="group relative aspect-[4/5] w-full overflow-hidden rounded-xl focus:outline-none focus:ring-2 focus:ring-pink-400 focus:ring-offset-2"
+            className="group relative aspect-[4/5] w-full overflow-hidden rounded-2xl border border-borderSoft/60 bg-white shadow-soft focus:outline-none focus:ring-2 focus:ring-gold focus:ring-offset-2 focus:ring-offset-cream"
           >
             {item.src ? (
               <>
@@ -100,19 +100,19 @@ export default function Gallery() {
                   alt={item.alt}
                   className="absolute inset-0 h-full w-full object-cover transition duration-300 group-hover:scale-105"
                 />
-                <span className="absolute inset-0 bg-pink-900/0 transition group-hover:bg-pink-900/10" />
+                <span className="absolute inset-0 bg-charcoal/0 transition group-hover:bg-charcoal/5" />
               </>
             ) : (
-              <ImagePlaceholderBox className="absolute inset-0 h-full w-full transition group-hover:opacity-90" />
+              <ImagePlaceholderBox className="absolute inset-0 h-full w-full transition group-hover:opacity-95" />
             )}
           </button>
         ))}
       </div>
 
-      {/* Lightbox modal */}
+      {/* Lightbox */}
       {lightboxItem && (
         <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4"
+          className="fixed inset-0 z-50 flex items-center justify-center bg-charcoal/70 p-5"
           role="dialog"
           aria-modal="true"
           aria-label="Image lightbox"
@@ -121,25 +121,25 @@ export default function Gallery() {
           <button
             type="button"
             onClick={closeLightbox}
-            className="absolute right-4 top-4 z-10 rounded-full bg-white/10 p-2 text-white transition hover:bg-white/20 focus:outline-none focus:ring-2 focus:ring-white"
+            className="absolute right-5 top-5 z-10 rounded-full bg-white/10 p-2.5 text-white transition hover:bg-white/20 focus:outline-none focus:ring-2 focus:ring-white"
             aria-label="Close lightbox"
           >
             <CloseIcon />
           </button>
           <div
-            className="relative max-h-[90vh] max-w-4xl"
+            className="relative max-h-[85vh] max-w-4xl"
             onClick={(e) => e.stopPropagation()}
           >
             {lightboxItem.src ? (
               <img
                 src={lightboxItem.src}
                 alt={lightboxItem.alt}
-                className="max-h-[90vh] w-auto rounded-lg object-contain shadow-2xl"
+                className="max-h-[85vh] w-auto rounded-2xl object-contain shadow-cardHover"
               />
             ) : (
-              <ImagePlaceholderBox className="aspect-[4/5] w-full max-w-md rounded-lg sm:max-w-lg" />
+              <ImagePlaceholderBox className="aspect-[4/5] w-full max-w-md rounded-2xl sm:max-w-lg" />
             )}
-            <p className="mt-2 text-center text-sm text-white/90">
+            <p className="mt-4 text-center text-sm text-white/80">
               {lightboxItem.category} — {lightboxItem.alt}
             </p>
           </div>

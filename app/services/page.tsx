@@ -33,14 +33,17 @@ const SERVICES = [
 
 export default function ServicesPage() {
   return (
-    <main className="min-h-screen bg-white">
+    <main className="min-h-screen bg-cream">
       {/* Hero */}
-      <section className="bg-gradient-to-b from-pink-50 to-white px-4 py-16 sm:py-20 md:py-24">
-        <div className="mx-auto max-w-3xl text-center">
-          <h1 className="font-serif text-4xl font-semibold tracking-tight text-pink-900 sm:text-5xl">
-            Our Lash Services
+      <section className="px-5 py-24 sm:py-32 md:py-40">
+        <div className="mx-auto max-w-2xl text-center">
+          <p className="font-serif text-xs font-medium uppercase tracking-luxury-wide text-muted sm:text-sm">
+            Services
+          </p>
+          <h1 className="mt-6 font-serif text-4xl font-semibold tracking-tight text-charcoal sm:text-5xl">
+            Our lash services
           </h1>
-          <p className="mt-4 text-lg text-pink-700/90">
+          <p className="mt-6 text-lg leading-relaxed text-muted">
             Expert lash extensions and lifts tailored to your style. Choose the
             look that suits you.
           </p>
@@ -48,28 +51,28 @@ export default function ServicesPage() {
       </section>
 
       {/* Service cards */}
-      <section className="px-4 py-12 sm:py-16">
-        <div className="mx-auto max-w-6xl">
+      <section className="border-t border-borderSoft/80 px-5 pb-24 sm:pb-32">
+        <div className="mx-auto max-w-5xl">
           <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
             {SERVICES.map((service) => (
               <article
                 key={service.name}
-                className="flex flex-col rounded-2xl border border-pink-100 bg-white p-6 shadow-sm transition hover:border-pink-200 hover:shadow-md"
+                className="flex flex-col rounded-2xl border border-borderSoft/60 bg-white p-8 shadow-soft transition hover:shadow-cardHover"
               >
-                <h2 className="font-serif text-2xl font-semibold text-pink-900">
+                <h2 className="font-serif text-2xl font-semibold tracking-tight text-charcoal">
                   {service.name}
                 </h2>
-                <div className="mt-4 flex flex-wrap gap-3 text-sm text-pink-600">
+                <div className="mt-5 flex flex-wrap gap-2 text-sm text-muted">
                   <span className="font-medium">{service.price}</span>
-                  <span className="text-pink-300">·</span>
+                  <span className="text-borderSoft">·</span>
                   <span>{service.duration}</span>
                 </div>
-                <p className="mt-4 flex-1 text-pink-700/90 leading-relaxed">
+                <p className="mt-5 flex-1 leading-relaxed text-muted">
                   {service.description}
                 </p>
                 <Link
                   href="/booking"
-                  className="mt-6 block w-full rounded-full bg-pink-500 py-3 text-center text-sm font-medium text-white transition hover:bg-pink-600 focus:outline-none focus:ring-2 focus:ring-pink-400 focus:ring-offset-2"
+                  className="mt-8 block w-full rounded-full bg-gold py-3.5 text-center text-sm font-medium tracking-luxury text-cream shadow-soft transition hover:bg-[#b5965f] focus:outline-none focus:ring-2 focus:ring-gold focus:ring-offset-2 focus:ring-offset-cream"
                 >
                   Book Now
                 </Link>
@@ -80,21 +83,24 @@ export default function ServicesPage() {
       </section>
 
       {/* Aftercare */}
-      <section className="border-t border-pink-100 bg-pink-50/40 px-4 py-16 sm:py-20">
-        <div className="mx-auto max-w-3xl">
-          <h2 className="font-serif text-3xl font-semibold text-pink-900 sm:text-4xl">
-            Aftercare & maintenance
+      <section className="border-t border-borderSoft/80 px-5 py-24 sm:py-32">
+        <div className="mx-auto max-w-2xl">
+          <p className="font-serif text-xs font-medium uppercase tracking-luxury-wide text-muted">
+            Aftercare
+          </p>
+          <h2 className="mt-3 font-serif text-3xl font-semibold tracking-tight text-charcoal sm:text-4xl">
+            Maintenance & care
           </h2>
-          <p className="mt-2 text-pink-700/80">
+          <p className="mt-4 text-muted">
             Get the most out of your lash extensions.
           </p>
 
-          <div className="mt-10 space-y-10">
+          <div className="mt-14 space-y-14">
             <div>
-              <h3 className="font-serif text-xl font-semibold text-pink-900">
+              <h3 className="font-serif text-xl font-semibold text-charcoal">
                 How long do lashes last?
               </h3>
-              <p className="mt-3 text-pink-700/90 leading-relaxed">
+              <p className="mt-4 leading-relaxed text-muted">
                 With proper care, classic and volume lash extensions typically
                 last 3–4 weeks as your natural lashes shed. We recommend a fill
                 every 2–3 weeks to keep your look full. Lash lifts and tints
@@ -103,33 +109,33 @@ export default function ServicesPage() {
             </div>
 
             <div>
-              <h3 className="font-serif text-xl font-semibold text-pink-900">
+              <h3 className="font-serif text-xl font-semibold text-charcoal">
                 Maintenance tips
               </h3>
-              <ul className="mt-3 space-y-2 text-pink-700/90 leading-relaxed">
-                <li className="flex gap-2">
-                  <span className="text-pink-400">•</span>
+              <ul className="mt-4 space-y-3 leading-relaxed text-muted">
+                <li className="flex gap-3">
+                  <span className="text-gold">·</span>
                   <span>
                     Avoid water, steam, and heavy rubbing for the first 24–48
                     hours after your appointment.
                   </span>
                 </li>
-                <li className="flex gap-2">
-                  <span className="text-pink-400">•</span>
+                <li className="flex gap-3">
+                  <span className="text-gold">·</span>
                   <span>
                     Use oil-free makeup remover and avoid oil-based products
                     near the lash line.
                   </span>
                 </li>
-                <li className="flex gap-2">
-                  <span className="text-pink-400">•</span>
+                <li className="flex gap-3">
+                  <span className="text-gold">·</span>
                   <span>
                     Gently brush lashes with a clean spoolie to keep them
                     separated and tidy.
                   </span>
                 </li>
-                <li className="flex gap-2">
-                  <span className="text-pink-400">•</span>
+                <li className="flex gap-3">
+                  <span className="text-gold">·</span>
                   <span>
                     Book fills every 2–3 weeks to maintain fullness and avoid
                     large gaps.
@@ -139,12 +145,14 @@ export default function ServicesPage() {
             </div>
           </div>
 
-          <Link
-            href="/booking"
-            className="mt-10 inline-block rounded-full bg-pink-500 px-6 py-3 font-medium text-white transition hover:bg-pink-600"
-          >
-            Book your appointment
-          </Link>
+          <div className="mt-16">
+            <Link
+              href="/booking"
+              className="inline-block rounded-full bg-gold px-8 py-3.5 text-sm font-medium tracking-luxury text-cream shadow-soft transition hover:bg-[#b5965f] focus:outline-none focus:ring-2 focus:ring-gold focus:ring-offset-2 focus:ring-offset-cream"
+            >
+              Book your appointment
+            </Link>
+          </div>
         </div>
       </section>
     </main>

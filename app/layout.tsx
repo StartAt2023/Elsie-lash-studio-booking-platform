@@ -29,7 +29,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={`${cormorant.variable} ${outfit.variable}`}>
-      <body className="min-h-screen bg-white font-sans antialiased text-pink-900">
+      <body className="min-h-screen bg-cream font-sans antialiased text-charcoal">
         <Header />
         {children}
       </body>

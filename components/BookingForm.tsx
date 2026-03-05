@@ -34,14 +34,14 @@ export default function BookingForm() {
 
   if (submitted) {
     return (
-      <div className="rounded-2xl border border-pink-200 bg-pink-50/60 p-8 text-center shadow-sm sm:p-12">
-        <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-pink-500 text-white">
+      <div className="rounded-2xl border border-borderSoft/60 bg-white p-10 text-center shadow-soft sm:p-14">
+        <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-gold text-cream shadow-soft">
           <CheckIcon />
         </div>
-        <h2 className="mt-6 font-serif text-2xl font-semibold text-pink-900 sm:text-3xl">
+        <h2 className="mt-8 font-serif text-2xl font-semibold tracking-tight text-charcoal sm:text-3xl">
           Request received
         </h2>
-        <p className="mt-3 text-pink-700">
+        <p className="mt-4 leading-relaxed text-muted">
           Thank you, {formData.fullName || "there"}! We&apos;ll be in touch soon
           to confirm your appointment.
         </p>
@@ -57,7 +57,7 @@ export default function BookingForm() {
               notes: "",
             });
           }}
-          className="mt-8 rounded-full bg-pink-500 px-6 py-3 font-medium text-white transition hover:bg-pink-600"
+          className="mt-10 rounded-full bg-gold px-8 py-3.5 text-sm font-medium tracking-luxury text-cream shadow-soft transition hover:bg-[#b5965f] focus:outline-none focus:ring-2 focus:ring-gold focus:ring-offset-2 focus:ring-offset-cream"
         >
           Submit another request
         </button>
@@ -68,13 +68,13 @@ export default function BookingForm() {
   return (
     <form
       onSubmit={handleSubmit}
-      className="rounded-2xl border border-pink-200 bg-white p-6 shadow-sm sm:p-8"
+      className="rounded-2xl border border-borderSoft/60 bg-white p-8 shadow-soft sm:p-10"
     >
-      <div className="space-y-6">
+      <div className="space-y-8">
         <div>
           <label
             htmlFor="fullName"
-            className="mb-1.5 block text-sm font-medium text-pink-900"
+            className="mb-2 block text-sm font-medium tracking-luxury text-charcoal"
           >
             Full name
           </label>
@@ -86,14 +86,14 @@ export default function BookingForm() {
             value={formData.fullName}
             onChange={handleChange}
             placeholder="Your name"
-            className="w-full rounded-lg border border-pink-200 bg-pink-50/50 px-4 py-3 text-pink-900 placeholder-pink-400/70 focus:border-pink-400 focus:outline-none focus:ring-2 focus:ring-pink-400/30"
+            className="w-full rounded-xl border border-borderSoft/60 bg-cream/50 px-4 py-3.5 text-charcoal placeholder-muted focus:border-gold focus:outline-none focus:ring-2 focus:ring-gold/20"
           />
         </div>
 
         <div>
           <label
             htmlFor="phone"
-            className="mb-1.5 block text-sm font-medium text-pink-900"
+            className="mb-2 block text-sm font-medium tracking-luxury text-charcoal"
           >
             Phone number
           </label>
@@ -105,14 +105,14 @@ export default function BookingForm() {
             value={formData.phone}
             onChange={handleChange}
             placeholder="(061) 123456789"
-            className="w-full rounded-lg border border-pink-200 bg-pink-50/50 px-4 py-3 text-pink-900 placeholder-pink-400/70 focus:border-pink-400 focus:outline-none focus:ring-2 focus:ring-pink-400/30"
+            className="w-full rounded-xl border border-borderSoft/60 bg-cream/50 px-4 py-3.5 text-charcoal placeholder-muted focus:border-gold focus:outline-none focus:ring-2 focus:ring-gold/20"
           />
         </div>
 
         <div>
           <label
             htmlFor="service"
-            className="mb-1.5 block text-sm font-medium text-pink-900"
+            className="mb-2 block text-sm font-medium tracking-luxury text-charcoal"
           >
             Service
           </label>
@@ -122,7 +122,7 @@ export default function BookingForm() {
             required
             value={formData.service}
             onChange={handleChange}
-            className="w-full rounded-lg border border-pink-200 bg-pink-50/50 px-4 py-3 text-pink-900 focus:border-pink-400 focus:outline-none focus:ring-2 focus:ring-pink-400/30"
+            className="w-full rounded-xl border border-borderSoft/60 bg-cream/50 px-4 py-3.5 text-charcoal focus:border-gold focus:outline-none focus:ring-2 focus:ring-gold/20"
           >
             <option value="">Select a service</option>
             {SERVICES.map((s) => (
@@ -136,7 +136,7 @@ export default function BookingForm() {
         <div>
           <label
             htmlFor="date"
-            className="mb-1.5 block text-sm font-medium text-pink-900"
+            className="mb-2 block text-sm font-medium tracking-luxury text-charcoal"
           >
             Preferred date
           </label>
@@ -147,14 +147,14 @@ export default function BookingForm() {
             required
             value={formData.date}
             onChange={handleChange}
-            className="w-full rounded-lg border border-pink-200 bg-pink-50/50 px-4 py-3 text-pink-900 focus:border-pink-400 focus:outline-none focus:ring-2 focus:ring-pink-400/30"
+            className="w-full rounded-xl border border-borderSoft/60 bg-cream/50 px-4 py-3.5 text-charcoal focus:border-gold focus:outline-none focus:ring-2 focus:ring-gold/20"
           />
         </div>
 
         <div>
           <label
             htmlFor="notes"
-            className="mb-1.5 block text-sm font-medium text-pink-900"
+            className="mb-2 block text-sm font-medium tracking-luxury text-charcoal"
           >
             Notes
           </label>
@@ -165,14 +165,14 @@ export default function BookingForm() {
             value={formData.notes}
             onChange={handleChange}
             placeholder="Any special requests or questions..."
-            className="w-full resize-none rounded-lg border border-pink-200 bg-pink-50/50 px-4 py-3 text-pink-900 placeholder-pink-400/70 focus:border-pink-400 focus:outline-none focus:ring-2 focus:ring-pink-400/30"
+            className="w-full resize-none rounded-xl border border-borderSoft/60 bg-cream/50 px-4 py-3.5 text-charcoal placeholder-muted focus:border-gold focus:outline-none focus:ring-2 focus:ring-gold/20"
           />
         </div>
       </div>
 
       <button
         type="submit"
-        className="mt-8 w-full rounded-full bg-pink-500 py-4 font-medium text-white shadow-md transition hover:bg-pink-600 focus:outline-none focus:ring-2 focus:ring-pink-400 focus:ring-offset-2 sm:w-auto sm:px-10"
+        className="mt-10 w-full rounded-full bg-gold py-4 text-sm font-medium tracking-luxury text-cream shadow-soft transition hover:bg-[#b5965f] focus:outline-none focus:ring-2 focus:ring-gold focus:ring-offset-2 focus:ring-offset-cream sm:w-auto sm:px-12"
       >
         Submit booking request
       </button>
@@ -186,7 +186,7 @@ function CheckIcon() {
       xmlns="http://www.w3.org/2000/svg"
       viewBox="0 0 24 24"
       fill="currentColor"
-      className="h-7 w-7"
+      className="h-8 w-8"
       aria-hidden
     >
       <path

@@ -31,7 +31,7 @@ const SECTIONS: AccordionSection[] = [
         </p>
         <p className="mt-3">
           Cancellations or changes made with less than 24 hours notice may incur
-          a late cancellation fee of <strong>[多少钱？]</strong> before you can rebook. We’ll always try to work
+          a late cancellation fee of <strong>[多少钱？]</strong> before you can rebook. We'll always try to work
           with you when something unexpected comes up—just get in touch as soon
           as you can.
         </p>
@@ -44,13 +44,13 @@ const SECTIONS: AccordionSection[] = [
     content: (
       <>
         <p>
-          If you don’t show up for your appointment and we haven’t heard from
-          you, we’ll treat it as a no-show. The full service amount may be
+          If you don't show up for your appointment and we haven't heard from
+          you, we'll treat it as a no-show. The full service amount may be
           charged before future bookings, and we may require a deposit for
           subsequent appointments.
         </p>
         <p className="mt-3">
-          If you’re running late or can’t make it, a quick message or call
+          If you're running late or can't make it, a quick message or call
           makes a big difference so we can adjust the schedule.
         </p>
       </>
@@ -63,12 +63,12 @@ const SECTIONS: AccordionSection[] = [
       <>
         <p>
           Please aim to arrive on time so we can give you the full treatment
-          without rushing. If you’re more than 10–15 minutes late, we may need
+          without rushing. If you're more than 10–15 minutes late, we may need
           to shorten your service, reschedule, or treat the appointment as
-          cancelled depending on the day’s schedule.
+          cancelled depending on the day's schedule.
         </p>
         <p className="mt-3">
-          If you know you’ll be late, message us as soon as possible and we’ll
+          If you know you'll be late, message us as soon as possible and we'll
           do our best to accommodate you.
         </p>
       </>
@@ -80,13 +80,13 @@ const SECTIONS: AccordionSection[] = [
     content: (
       <>
         <p>
-          We don’t offer refunds once a service has been completed. Lash
-          extensions are a custom, one-off service and we can’t “undo” the
+          We don't offer refunds once a service has been completed. Lash
+          extensions are a custom, one-off service and we can't "undo" the
           work.
         </p>
         <p className="mt-3">
-          If you’re not happy with the result, please contact us within 48–72
-          hours. We’re happy to offer a complimentary fix or adjustment where
+          If you're not happy with the result, please contact us within 48–72
+          hours. We're happy to offer a complimentary fix or adjustment where
           possible—your satisfaction matters to us. After that window, any
           changes would be at standard pricing.
         </p>
@@ -101,10 +101,10 @@ const SECTIONS: AccordionSection[] = [
         <p>
           To get the best result and keep the appointment smooth, please:
         </p>
-        <ul className="mt-2 list-inside list-disc space-y-1 text-pink-800/90">
+        <ul className="mt-2 list-inside list-disc space-y-1 text-muted">
           <li>Arrive with clean lashes—no mascara or eye makeup.</li>
           <li>Avoid oily products or heavy skincare around the eye area on the day.</li>
-          <li>If you’re sensitive to caffeine or find it hard to lie still, consider avoiding it before your appointment (optional but can help).</li>
+          <li>If you're sensitive to caffeine or find it hard to lie still, consider avoiding it before your appointment (optional but can help).</li>
         </ul>
         <p className="mt-3">
           Clean, product-free lashes help the extensions adhere properly and
@@ -126,7 +126,7 @@ const SECTIONS: AccordionSection[] = [
         </p>
         <p className="mt-3">
           Fills are recommended every 2–3 weeks to maintain fullness as your
-          natural lashes shed. We’ll remind you when it’s a good time to
+          natural lashes shed. We'll remind you when it's a good time to
           rebook.
         </p>
       </>
@@ -146,8 +146,8 @@ const SECTIONS: AccordionSection[] = [
         </p>
         <p className="mt-3">
           Let us know about any allergies or reactions before your booking.
-          We’re not liable for reactions if you choose to skip a recommended
-          patch test or don’t disclose known allergies.
+          We're not liable for reactions if you choose to skip a recommended
+          patch test or don't disclose known allergies.
         </p>
       </>
     ),
@@ -160,7 +160,7 @@ const SECTIONS: AccordionSection[] = [
         <p>
           Your name, contact details, and booking history are used only to
           manage appointments, send reminders, and provide your service. We
-          don’t share your information with third parties for marketing. Data
+          don't share your information with third parties for marketing. Data
           is stored securely and handled in line with Australian privacy
           practices.
         </p>
@@ -174,27 +174,30 @@ const SECTIONS: AccordionSection[] = [
 
 export default function PoliciesPage() {
   return (
-    <main className="min-h-screen bg-white">
-      <section className="bg-gradient-to-b from-pink-50 to-white px-4 py-12 sm:py-16">
+    <main className="min-h-screen bg-cream">
+      <section className="px-5 py-24 sm:py-32">
         <div className="mx-auto max-w-2xl">
-          <h1 className="font-serif text-3xl font-semibold tracking-tight text-pink-900 sm:text-4xl">
+          <p className="font-serif text-xs font-medium uppercase tracking-luxury-wide text-muted">
+            Policies
+          </p>
+          <h1 className="mt-3 font-serif text-3xl font-semibold tracking-tight text-charcoal sm:text-4xl">
             Studio policies
           </h1>
-          <p className="mt-3 text-pink-700/90">
-            Clear guidelines so we’re on the same page. Based in Sydney—we’re
+          <p className="mt-4 leading-relaxed text-muted">
+            Clear guidelines so we're on the same page. Based in Sydney—we're
             here to make your experience smooth and stress-free.
           </p>
         </div>
       </section>
 
-      <section className="px-4 py-8 sm:py-12">
-        <div className="mx-auto max-w-2xl">
+      <section className="border-t border-borderSoft/80 px-5 pb-24 sm:pb-32">
+        <div className="mx-auto max-w-2xl pt-16">
           <PoliciesAccordion sections={SECTIONS} />
 
-          <div className="mt-12 text-center">
+          <div className="mt-16 text-center">
             <Link
               href="/booking"
-              className="inline-block rounded-full bg-pink-500 px-8 py-4 font-medium text-white shadow-md transition hover:bg-pink-600 focus:outline-none focus:ring-2 focus:ring-pink-400 focus:ring-offset-2"
+              className="inline-block rounded-full bg-gold px-10 py-4 text-sm font-medium tracking-luxury text-cream shadow-soft transition hover:bg-[#b5965f] focus:outline-none focus:ring-2 focus:ring-gold focus:ring-offset-2 focus:ring-offset-cream"
             >
               Book Now
             </Link>

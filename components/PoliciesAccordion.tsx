@@ -16,25 +16,25 @@ export default function PoliciesAccordion({ sections }: PoliciesAccordionProps) 
   const [openId, setOpenId] = useState<string | null>(sections[0]?.id ?? null);
 
   return (
-    <div className="space-y-2">
+    <div className="space-y-4">
       {sections.map(({ id, title, content }) => {
         const isOpen = openId === id;
         return (
           <div
             key={id}
-            className="overflow-hidden rounded-xl border border-pink-100 bg-white"
+            className="overflow-hidden rounded-2xl border border-borderSoft/60 bg-white shadow-soft"
           >
             <button
               type="button"
               onClick={() => setOpenId(isOpen ? null : id)}
-              className="flex w-full items-center justify-between px-5 py-4 text-left font-medium text-pink-900 transition hover:bg-pink-50/50 sm:px-6"
+              className="flex w-full items-center justify-between px-6 py-5 text-left text-sm font-medium tracking-luxury text-charcoal transition hover:bg-cream/50 sm:px-8 sm:text-base"
               aria-expanded={isOpen}
               aria-controls={`policy-${id}`}
               id={`policy-heading-${id}`}
             >
               <span>{title}</span>
               <span
-                className={`ml-2 shrink-0 text-pink-500 transition-transform ${isOpen ? "rotate-180" : ""}`}
+                className={`ml-4 shrink-0 text-gold transition-transform duration-200 ${isOpen ? "rotate-180" : ""}`}
                 aria-hidden
               >
                 <ChevronIcon />
@@ -45,10 +45,10 @@ export default function PoliciesAccordion({ sections }: PoliciesAccordionProps) 
               role="region"
               aria-labelledby={`policy-heading-${id}`}
               hidden={!isOpen}
-              className="border-t border-pink-100 bg-pink-50/30"
+              className="border-t border-borderSoft/60 bg-cream/30"
             >
-              <div className="px-5 py-4 sm:px-6 sm:py-5">
-                <div className="prose prose-pink max-w-none text-pink-800/90 text-sm leading-relaxed sm:text-base">
+              <div className="px-6 py-5 sm:px-8 sm:py-6">
+                <div className="max-w-none text-sm leading-relaxed text-muted sm:text-base">
                   {content}
                 </div>
               </div>

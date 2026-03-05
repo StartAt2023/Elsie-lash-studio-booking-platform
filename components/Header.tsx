@@ -11,20 +11,20 @@ const navLinks = [
 
 export default function Header() {
   return (
-    <header className="sticky top-0 z-50 border-b border-pink-100/60 bg-white/95 backdrop-blur-sm">
-      <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-4 sm:px-6">
+    <header className="sticky top-0 z-50 border-b border-borderSoft/80 bg-cream/90 backdrop-blur-md">
+      <div className="mx-auto flex max-w-5xl items-center justify-between px-5 py-5 sm:px-8 lg:px-10">
         <Link
           href="/"
-          className="font-serif text-xl font-semibold tracking-tight text-pink-900 sm:text-2xl"
+          className="font-serif text-xl font-semibold tracking-tight text-charcoal sm:text-2xl"
         >
           Elsie Lash Studio
         </Link>
-        <nav className="hidden gap-8 md:flex" aria-label="Main navigation">
+        <nav className="hidden gap-10 md:flex" aria-label="Main navigation">
           {navLinks.map(({ href, label }) => (
             <Link
               key={href}
               href={href}
-              className="text-sm font-medium text-pink-800 transition hover:text-pink-600"
+              className="text-sm font-medium tracking-luxury text-muted transition-colors hover:text-charcoal"
             >
               {label}
             </Link>
@@ -32,7 +32,7 @@ export default function Header() {
         </nav>
         <Link
           href="/booking"
-          className="rounded-full bg-pink-500 px-4 py-2 text-sm font-medium text-white shadow-sm transition hover:bg-pink-600"
+          className="rounded-full bg-gold px-6 py-2.5 text-sm font-medium tracking-luxury text-cream shadow-soft transition hover:bg-[#b5965f] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold focus-visible:ring-offset-2 focus-visible:ring-offset-cream hidden sm:inline-block"
         >
           Book Now
         </Link>
