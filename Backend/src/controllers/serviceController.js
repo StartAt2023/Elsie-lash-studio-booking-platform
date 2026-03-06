@@ -10,6 +10,7 @@ function toResponse(doc) {
     durationMinutes: obj.duration,
     description: obj.description ?? "",
     active: obj.active,
+    sortOrder: obj.sortOrder ?? 0,
   };
 }
 
@@ -21,20 +22,23 @@ function fromBody(body) {
     duration: durationMinutes ?? duration ?? 0,
     description: description ?? "",
     active: body.active !== undefined ? body.active : true,
+    sortOrder: body.sortOrder !== undefined ? body.sortOrder : 0,
   };
 }
 
 export async function getServices(req, res) {
   try {
     const docs = await Service.find().lean();
+    const sorted = docs.sort((a, b) => (a.sortOrder ?? 0) - (b.sortOrder ?? 0));
     res.json(
-      docs.map((d) => ({
+      sorted.map((d) => ({
         id: d._id,
         name: d.name,
         price: d.price,
         durationMinutes: d.duration,
         description: d.description ?? "",
         active: d.active,
+        sortOrder: d.sortOrder ?? 0,
       }))
     );
   } catch (err) {
@@ -75,6 +79,7 @@ export async function updateServiceHandler(req, res) {
     if (body.duration !== undefined) updates.duration = body.duration;
     if (body.description !== undefined) updates.description = body.description;
     if (body.active !== undefined) updates.active = body.active;
+    if (body.sortOrder !== undefined) updates.sortOrder = body.sortOrder;
     const service = await Service.findByIdAndUpdate(
       req.params.id,
       { $set: updates },

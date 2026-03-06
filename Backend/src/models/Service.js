@@ -7,6 +7,7 @@ const serviceSchema = new mongoose.Schema(
     duration: { type: Number, required: true, default: 0 },
     description: { type: String, default: "" },
     active: { type: Boolean, default: true },
+    sortOrder: { type: Number, default: 0 },
   },
   { versionKey: false }
 );

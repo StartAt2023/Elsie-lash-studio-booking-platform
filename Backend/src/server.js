@@ -7,6 +7,8 @@ import bookingRoutes from "./routes/bookingRoutes.js";
 import customerRoutes from "./routes/customerRoutes.js";
 import serviceRoutes from "./routes/serviceRoutes.js";
 import galleryRoutes from "./routes/galleryRoutes.js";
+import contentRoutes from "./routes/contentRoutes.js";
+import settingsRoutes from "./routes/settingsRoutes.js";
 import { notFound } from "./middleware/notFound.js";
 import { errorHandler } from "./middleware/errorHandler.js";
 import { requestLogger } from "./middleware/requestLogger.js";
@@ -25,6 +27,8 @@ app.use("/api/bookings", bookingRoutes);
 app.use("/api/customers", customerRoutes);
 app.use("/api/services", serviceRoutes);
 app.use("/api/gallery", galleryRoutes);
+app.use("/api/content", contentRoutes);
+app.use("/api/settings", settingsRoutes);
 
 app.use(notFound);
 app.use(errorHandler);
