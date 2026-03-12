@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { getGallery, type ApiError } from "@/lib/api";
+import { getGallery, type ApiError, type GalleryItemApi } from "@/lib/api";
 import Gallery from "@/components/Gallery";
 
 export type GalleryItemClient = {
@@ -11,9 +11,7 @@ export type GalleryItemClient = {
   alt: string;
 };
 
-function mapApiToGalleryItem(
-  item: { id: number; title: string; imageUrl: string; category: string }
-): GalleryItemClient {
+function mapApiToGalleryItem(item: GalleryItemApi): GalleryItemClient {
   const category =
     item.category === "Hybrid" || item.category === "Volume"
       ? item.category

@@ -8,10 +8,36 @@ Create `.env.local` from `.env.example`. All API URLs come from env (no hardcode
 
 | Variable | Required | Description |
 |----------|----------|-------------|
-| `NEXT_PUBLIC_API_BASE_URL` | Yes (for API) | Backend API base URL. Local dev: `http://localhost:5001`. Production: your deployed backend URL. |
+| `NEXT_PUBLIC_API_BASE_URL` | Yes (for API) | Backend API base URL. Local dev: `http://localhost:5001` (or leave unset to use this default). Production: must be set to your deployed backend URL. |
 | `NEXT_PUBLIC_ADMIN_PASSWORD` | For admin | Temporary admin login password (client-side; use a dev-only value until real auth exists). |
 
-If `NEXT_PUBLIC_API_BASE_URL` is unset, the app falls back to `http://localhost:5001` for local development only.
+If `NEXT_PUBLIC_API_BASE_URL` is unset in development, the app falls back to `http://localhost:5001`. In production (e.g. Vercel), the variable must be set.
+
+## Deploying to Vercel
+
+1. **Connect the repo**
+   - Push the project to GitHub (or GitLab/Bitbucket).
+   - In [Vercel](https://vercel.com), import the repository and set the **Root Directory** to `Frontend`.
+
+2. **Build settings**
+   - **Framework Preset:** Next.js (auto-detected).
+   - **Build Command:** `npm run build` (default).
+   - **Output Directory:** leave default (Next.js handles it).
+
+3. **Environment variables**
+   - In the Vercel project: **Settings → Environment Variables**.
+   - Add:
+     - `NEXT_PUBLIC_API_BASE_URL` — Your backend API base URL (e.g. `https://api.yourdomain.com`). No trailing slash. Required so the frontend can call the API.
+     - `NEXT_PUBLIC_ADMIN_PASSWORD` — Password for admin login at `/admin/login`. Use a strong value in production.
+   - Apply to **Production** (and Preview if you use branch deploys).
+
+4. **Connecting to the backend**
+   - Deploy your backend (e.g. Railway, Render, or a VPS) and ensure it is reachable over HTTPS.
+   - Set `NEXT_PUBLIC_API_BASE_URL` in Vercel to that URL. The frontend will call `${NEXT_PUBLIC_API_BASE_URL}/api/...` for all API requests.
+   - Configure CORS on the backend to allow your Vercel domain (e.g. `https://your-app.vercel.app`).
+
+5. **Deploy**
+   - Trigger a deploy (e.g. push to the main branch). After the build completes, the site will be available at the Vercel URL.
 
 ## Running locally
 

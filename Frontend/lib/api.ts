@@ -7,9 +7,11 @@
 const DEFAULT_BASE_URL = "http://localhost:5001";
 const DEFAULT_TIMEOUT_MS = 15_000;
 
-/** Base URL for API (no trailing slash). */
+/** Base URL for API (no trailing slash). Uses NEXT_PUBLIC_API_BASE_URL; falls back to localhost only in development. */
 export function getBaseUrl(): string {
-  const url = process.env.NEXT_PUBLIC_API_BASE_URL || DEFAULT_BASE_URL;
+  const url =
+    process.env.NEXT_PUBLIC_API_BASE_URL ??
+    (process.env.NODE_ENV === "development" ? DEFAULT_BASE_URL : "");
   return url.replace(/\/$/, "");
 }
 
@@ -99,7 +101,14 @@ export async function request<T>(
     return (await res.json()) as T;
   } catch (e) {
     clearTimeout(timeoutId);
-    if (e instanceof ApiError) throw e;
+    if (
+      e &&
+      typeof e === "object" &&
+      "statusCode" in e &&
+      "message" in e &&
+      typeof (e as ApiError).message === "string"
+    )
+      throw e as ApiError;
     if (e instanceof DOMException && e.name === "AbortError") {
       throw {
         message: "Request timed out. Please try again.",
