@@ -1,4 +1,5 @@
 import Booking from "../models/Booking.js";
+import { sendBookingNotificationEmail } from "../services/emailService.js";
 
 function toResponse(doc) {
   if (!doc) return null;
@@ -52,6 +53,9 @@ export async function createBookingHandler(req, res) {
   }
   try {
     const booking = await Booking.create({ fullName, phone, service, date, notes: notes ?? "" });
+    sendBookingNotificationEmail(booking).catch((err) => {
+      console.error("[bookingController] Booking notification email failed:", err.message || err);
+    });
     res.status(201).json(toResponse(booking));
   } catch (err) {
     res.status(500).json({ message: err.message || "Failed to create booking" });

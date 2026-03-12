@@ -5,10 +5,12 @@ import { useRouter } from "next/navigation";
 import {
   getBookings,
   updateBooking,
+  deleteBooking,
   type Booking,
   type ApiError,
   getApiErrorMessage,
 } from "@/lib/api";
+import { useToast } from "@/components/admin/ToastContext";
 
 const STATUS_OPTIONS = [
   { value: "", label: "All statuses" },
@@ -64,12 +66,15 @@ function StatusBadge({ status }: { status: string | undefined }) {
   );
 }
 
+const DELETE_CONFIRM_MESSAGE =
+  "Are you sure you want to permanently delete this booking? This action cannot be undone.";
+
 export default function AdminBookingsPage() {
   const router = useRouter();
+  const { showToast } = useToast();
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [toast, setToast] = useState<{ message: string } | null>(null);
   const [actingId, setActingId] = useState<string | number | null>(null);
 
   const [dateFrom, setDateFrom] = useState("");
@@ -95,12 +100,6 @@ export default function AdminBookingsPage() {
       cancelled = true;
     };
   }, []);
-
-  useEffect(() => {
-    if (!toast) return;
-    const t = setTimeout(() => setToast(null), 4000);
-    return () => clearTimeout(t);
-  }, [toast]);
 
   const filteredBookings = useMemo(() => {
     let list = [...bookings];
@@ -137,11 +136,24 @@ export default function AdminBookingsPage() {
       setBookings((prev) =>
         prev.map((b) => (String(b.id) === String(id) ? { ...b, status } : b))
       );
-      setToast({ message: `${label} updated.` });
+      showToast(`${label} updated.`);
     } catch (err) {
-      setToast({
-        message: getApiErrorMessage(err as ApiError),
-      });
+      showToast(getApiErrorMessage(err as ApiError));
+    } finally {
+      setActingId(null);
+    }
+  }
+
+  async function handleDelete(id: string | number) {
+    if (!confirm(DELETE_CONFIRM_MESSAGE)) return;
+    if (actingId !== null) return;
+    setActingId(id);
+    try {
+      await deleteBooking(id);
+      setBookings((prev) => prev.filter((b) => String(b.id) !== String(id)));
+      showToast("Booking permanently deleted.");
+    } catch (err) {
+      showToast(getApiErrorMessage(err as ApiError));
     } finally {
       setActingId(null);
     }
@@ -158,16 +170,6 @@ export default function AdminBookingsPage() {
       <p className="mt-2 text-muted">
         View and update booking status. Times are in Australia/Sydney.
       </p>
-
-      {/* Toast */}
-      {toast && (
-        <div
-          className="mt-4 rounded-xl border border-borderSoft/80 bg-white px-4 py-3 shadow-soft"
-          role="status"
-        >
-          <p className="text-sm text-charcoal">{toast.message}</p>
-        </div>
-      )}
 
       {/* Filters */}
       <div className="mt-6 flex flex-wrap items-end gap-4 rounded-2xl border border-borderSoft/60 bg-white p-4 shadow-soft">
@@ -326,58 +328,71 @@ export default function AdminBookingsPage() {
                         {formatDateTime(b.createdAt || "")}
                       </td>
                       <td className="px-4 py-3" onClick={(e) => e.stopPropagation()}>
-                        {canAct ? (
-                          <div className="flex flex-wrap gap-1">
-                            {(b.status || "pending") === "pending" && (
+                        <div className="flex flex-wrap items-center gap-1">
+                          {canAct ? (
+                            <>
+                              {(b.status || "pending") === "pending" && (
+                                <button
+                                  type="button"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    setStatus(b.id, "confirmed", "Booking");
+                                  }}
+                                  disabled={isActing}
+                                  className="rounded-lg border border-borderSoft/60 bg-white px-2.5 py-1.5 text-xs font-medium text-charcoal transition hover:bg-cream disabled:opacity-50"
+                                >
+                                  Confirm
+                                </button>
+                              )}
                               <button
                                 type="button"
                                 onClick={(e) => {
                                   e.stopPropagation();
-                                  setStatus(b.id, "confirmed", "Booking");
+                                  setStatus(b.id, "completed", "Booking");
                                 }}
                                 disabled={isActing}
                                 className="rounded-lg border border-borderSoft/60 bg-white px-2.5 py-1.5 text-xs font-medium text-charcoal transition hover:bg-cream disabled:opacity-50"
                               >
-                                Confirm
+                                Complete
                               </button>
-                            )}
-                            <button
-                              type="button"
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                setStatus(b.id, "completed", "Booking");
-                              }}
-                              disabled={isActing}
-                              className="rounded-lg border border-borderSoft/60 bg-white px-2.5 py-1.5 text-xs font-medium text-charcoal transition hover:bg-cream disabled:opacity-50"
-                            >
-                              Complete
-                            </button>
-                            <button
-                              type="button"
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                setStatus(b.id, "cancelled", "Booking");
-                              }}
-                              disabled={isActing}
-                              className="rounded-lg border border-borderSoft/60 bg-white px-2.5 py-1.5 text-xs font-medium text-charcoal transition hover:bg-cream disabled:opacity-50"
-                            >
-                              Cancel
-                            </button>
-                            <button
-                              type="button"
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                setStatus(b.id, "cancelled", "No-show");
-                              }}
-                              disabled={isActing}
-                              className="rounded-lg border border-borderSoft/60 bg-white px-2.5 py-1.5 text-xs font-medium text-muted transition hover:bg-cream disabled:opacity-50"
-                            >
-                              No-show
-                            </button>
-                          </div>
-                        ) : (
-                          <span className="text-muted text-xs">—</span>
-                        )}
+                              <button
+                                type="button"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  setStatus(b.id, "cancelled", "Booking");
+                                }}
+                                disabled={isActing}
+                                className="rounded-lg border border-borderSoft/60 bg-white px-2.5 py-1.5 text-xs font-medium text-muted transition hover:bg-cream disabled:opacity-50"
+                              >
+                                Cancel
+                              </button>
+                              <button
+                                type="button"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  setStatus(b.id, "cancelled", "No-show");
+                                }}
+                                disabled={isActing}
+                                className="rounded-lg border border-borderSoft/60 bg-white px-2.5 py-1.5 text-xs font-medium text-muted transition hover:bg-cream disabled:opacity-50"
+                              >
+                                No-show
+                              </button>
+                            </>
+                          ) : (
+                            <span className="text-muted text-xs">—</span>
+                          )}
+                          <button
+                            type="button"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleDelete(b.id);
+                            }}
+                            disabled={isActing}
+                            className="rounded-lg border border-red-200 bg-white px-2.5 py-1.5 text-xs font-medium text-red-600 transition hover:bg-red-50 disabled:opacity-50"
+                          >
+                            Delete
+                          </button>
+                        </div>
                       </td>
                     </tr>
                   );
