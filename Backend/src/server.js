@@ -15,7 +15,17 @@ import { requestLogger } from "./middleware/requestLogger.js";
 
 const app = express();
 
-app.use(cors({ origin: config.clientOrigin }));
+const corsOptions = {
+  origin(origin, callback) {
+    if (!origin) return callback(null, true);
+    if (config.allowedOrigins.includes(origin)) return callback(null, true);
+    callback(null, false);
+  },
+  methods: ["GET", "POST", "PATCH", "PUT", "DELETE", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization"],
+  optionsSuccessStatus: 204,
+};
+app.use(cors(corsOptions));
 app.use(express.json());
 app.use(requestLogger);
 
