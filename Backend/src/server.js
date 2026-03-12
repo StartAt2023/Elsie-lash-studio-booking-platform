@@ -33,10 +33,12 @@ app.use("/api/settings", settingsRoutes);
 app.use(notFound);
 app.use(errorHandler);
 
+const PORT = process.env.PORT || 5001;
+
 async function start() {
   await connectDB();
-  app.listen(config.port, () => {
-    console.log(`Backend listening on http://localhost:${config.port}`);
+  app.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
   });
 }
 
