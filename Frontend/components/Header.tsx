@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 
 const navLinks = [
   { href: "/", label: "Home" },
@@ -15,8 +16,16 @@ export default function Header() {
       <div className="mx-auto flex max-w-5xl items-center justify-between px-5 py-5 sm:px-8 lg:px-10">
         <Link
           href="/"
-          className="font-serif text-xl font-semibold tracking-tight text-charcoal sm:text-2xl"
+          className="flex items-center gap-3 font-serif text-xl font-semibold tracking-tight text-charcoal sm:text-2xl"
         >
+          <Image
+            src="/logo.png"
+            alt="Elsie Lash Studio"
+            width={40}
+            height={40}
+            className="h-9 w-9 shrink-0 sm:h-10 sm:w-10"
+            priority
+          />
           Elsie Lash Studio
         </Link>
         <nav className="hidden gap-10 md:flex" aria-label="Main navigation">
