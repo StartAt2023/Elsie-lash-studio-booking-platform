@@ -40,7 +40,7 @@ export function getApiErrorMessage(err: ApiError): string {
   return err.message || "Request failed.";
 }
 
-async function parseErrorResponse(res: Response): Promise<ApiError> {
+export async function parseErrorResponse(res: Response): Promise<ApiError> {
   let message = res.statusText || "Request failed";
   try {
     const data = await res.json();
@@ -120,9 +120,22 @@ export async function request<T>(
   }
 }
 
+/** Headers for admin-only routes (must match server ADMIN_PASSWORD). */
+export function adminHeaders(): HeadersInit {
+  const pwd = process.env.NEXT_PUBLIC_ADMIN_PASSWORD ?? "";
+  return { "X-Admin-Password": pwd };
+}
+
 /** GET request. */
-export function get<T>(path: string, options?: { signal?: AbortSignal }): Promise<T> {
-  return request<T>(path, { ...options, method: "GET" });
+export function get<T>(
+  path: string,
+  options?: { signal?: AbortSignal; headers?: HeadersInit }
+): Promise<T> {
+  return request<T>(path, {
+    method: "GET",
+    signal: options?.signal,
+    headers: options?.headers,
+  });
 }
 
 /** POST request with JSON body. */
@@ -221,6 +234,8 @@ export interface GalleryItemApi {
   category: string;
   title: string;
   imageUrl: string;
+  /** Cloudinary public_id (for server-side delete/replace) */
+  publicId?: string;
   description?: string;
   active?: boolean;
   sortOrder?: number;
@@ -230,6 +245,7 @@ export interface GalleryItemApi {
 export interface CreateGalleryBody {
   title: string;
   imageUrl: string;
+  publicId?: string;
   category?: string;
   description?: string;
   active?: boolean;
@@ -332,9 +348,62 @@ export function deleteCustomer(id: string | number): Promise<void> {
   return del(`/api/customers/${id}`);
 }
 
-/** GET /api/gallery */
+/** GET /api/gallery — public: active items only */
 export function getGallery(): Promise<GalleryItemApi[]> {
   return get<GalleryItemApi[]>("/api/gallery");
+}
+
+/** GET /api/gallery/admin/all — all items (admin password) */
+export function getGalleryAdmin(): Promise<GalleryItemApi[]> {
+  return get<GalleryItemApi[]>("/api/gallery/admin/all", { headers: adminHeaders() });
+}
+
+/** POST /api/gallery/upload — multipart (admin password) */
+export async function uploadGalleryImage(formData: FormData): Promise<GalleryItemApi> {
+  const base = getBaseUrl();
+  if (!base) {
+    throw { message: "API base URL not configured.", statusCode: 0 } as ApiError;
+  }
+  const res = await fetch(`${base}/api/gallery/upload`, {
+    method: "POST",
+    headers: adminHeaders() as HeadersInit,
+    body: formData,
+  });
+  if (!res.ok) throw await parseErrorResponse(res);
+  return (await res.json()) as GalleryItemApi;
+}
+
+/** POST /api/gallery/:id/replace-image — new file + fields (admin password) */
+export async function replaceGalleryImage(
+  id: string | number,
+  formData: FormData
+): Promise<GalleryItemApi> {
+  const base = getBaseUrl();
+  if (!base) {
+    throw { message: "API base URL not configured.", statusCode: 0 } as ApiError;
+  }
+  const res = await fetch(`${base}/api/gallery/${encodeURIComponent(String(id))}/replace-image`, {
+    method: "POST",
+    headers: adminHeaders() as HeadersInit,
+    body: formData,
+  });
+  if (!res.ok) throw await parseErrorResponse(res);
+  return (await res.json()) as GalleryItemApi;
+}
+
+export interface AiAssistantResponse {
+  reply: string;
+  action: string;
+  result: { ok: boolean; message: string; data: unknown } | null;
+}
+
+/** POST /api/ai — optional admin assistant (requires backend route + OPENAI_API_KEY) */
+export function postAiAssistant(message: string): Promise<AiAssistantResponse> {
+  return request<AiAssistantResponse>("/api/ai", {
+    method: "POST",
+    body: { message },
+    headers: adminHeaders(),
+  });
 }
 
 /** GET /api/gallery/:id */
@@ -348,7 +417,12 @@ export function createGalleryItem(body: CreateGalleryBody): Promise<GalleryItemA
 }
 
 /** PUT /api/gallery/:id */
-export function updateGalleryItem(id: string | number, body: Partial<Pick<GalleryItemApi, "title" | "imageUrl" | "category" | "description" | "active" | "sortOrder">>): Promise<GalleryItemApi> {
+export function updateGalleryItem(
+  id: string | number,
+  body: Partial<
+    Pick<GalleryItemApi, "title" | "imageUrl" | "publicId" | "category" | "description" | "active" | "sortOrder">
+  >
+): Promise<GalleryItemApi> {
   return put<GalleryItemApi>(`/api/gallery/${id}`, body);
 }
 

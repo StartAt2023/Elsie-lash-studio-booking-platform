@@ -22,7 +22,7 @@ const corsOptions = {
     callback(null, false);
   },
   methods: ["GET", "POST", "PATCH", "PUT", "DELETE", "OPTIONS"],
-  allowedHeaders: ["Content-Type", "Authorization"],
+  allowedHeaders: ["Content-Type", "Authorization", "X-Admin-Password"],
   optionsSuccessStatus: 204,
 };
 app.use(cors(corsOptions));

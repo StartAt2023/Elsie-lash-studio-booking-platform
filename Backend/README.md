@@ -12,9 +12,10 @@ Copy `.env.example` to `.env` and set values. Required for production:
 | `SENDGRID_API_KEY` | SendGrid API key for booking notification emails. Optional; if unset, bookings still succeed but no email is sent. |
 | `SENDER_EMAIL` | From address for notification emails. |
 | `ADMIN_NOTIFICATION_EMAIL` | Recipient for new-booking notifications. |
-| `ADMIN_PASSWORD` | Used by the frontend for admin login; set for production. |
+| `ADMIN_PASSWORD` | Must match frontend `NEXT_PUBLIC_ADMIN_PASSWORD`. Required for gallery admin list + upload. |
+| `CLOUDINARY_CLOUD_NAME`, `CLOUDINARY_API_KEY`, `CLOUDINARY_API_SECRET` | Gallery uploads (`POST /api/gallery/upload`). |
 
-Optional: `PORT` (default 5001), `CLIENT_ORIGIN` (CORS; default `http://localhost:3000`).
+Optional: `PORT` (default 5001), `FRONTEND_URL` / `ALLOWED_ORIGINS` for CORS.
 
 ## Run locally
 

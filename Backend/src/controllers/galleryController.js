@@ -1,4 +1,5 @@
 import Gallery from "../models/Gallery.js";
+import { destroyImage } from "../services/cloudinaryService.js";
 
 function toResponse(doc) {
   if (!doc) return null;
@@ -7,6 +8,7 @@ function toResponse(doc) {
     id: obj._id,
     title: obj.title,
     imageUrl: obj.imageUrl,
+    publicId: obj.publicId ?? "",
     category: obj.category ?? "Classic",
     description: obj.description ?? "",
     active: obj.active,
@@ -15,21 +17,35 @@ function toResponse(doc) {
   };
 }
 
+function mapLean(d) {
+  return {
+    id: d._id,
+    title: d.title,
+    imageUrl: d.imageUrl,
+    publicId: d.publicId ?? "",
+    category: d.category ?? "Classic",
+    description: d.description ?? "",
+    active: d.active,
+    sortOrder: d.sortOrder ?? 0,
+    createdAt: d.createdAt,
+  };
+}
+
+/** Public: active items only */
 export async function getGalleryItems(req, res) {
   try {
+    const docs = await Gallery.find({ active: true }).sort({ sortOrder: 1, createdAt: 1 }).lean();
+    res.json(docs.map(mapLean));
+  } catch (err) {
+    res.status(500).json({ message: err.message || "Failed to fetch gallery" });
+  }
+}
+
+/** Admin: all items */
+export async function getGalleryAdminItems(req, res) {
+  try {
     const docs = await Gallery.find().sort({ sortOrder: 1, createdAt: 1 }).lean();
-    res.json(
-      docs.map((d) => ({
-        id: d._id,
-        title: d.title,
-        imageUrl: d.imageUrl,
-        category: d.category ?? "Classic",
-        description: d.description ?? "",
-        active: d.active,
-        sortOrder: d.sortOrder ?? 0,
-        createdAt: d.createdAt,
-      }))
-    );
+    res.json(docs.map(mapLean));
   } catch (err) {
     res.status(500).json({ message: err.message || "Failed to fetch gallery" });
   }
@@ -54,6 +70,7 @@ export async function createGalleryItemHandler(req, res) {
     const item = await Gallery.create({
       title: title.trim(),
       imageUrl: imageUrl.trim(),
+      publicId: (req.body.publicId || "").trim(),
       category: (req.body.category || "Classic").trim(),
       description: (req.body.description || "").trim(),
       active: req.body.active !== undefined ? req.body.active : true,
@@ -69,7 +86,7 @@ export async function updateGalleryItemHandler(req, res) {
   try {
     const body = req.body;
     const updates = {};
-    ["title", "imageUrl", "category", "description", "active", "sortOrder"].forEach((key) => {
+    ["title", "imageUrl", "publicId", "category", "description", "active", "sortOrder"].forEach((key) => {
       if (body[key] !== undefined) updates[key] = body[key];
     });
     const item = await Gallery.findByIdAndUpdate(
@@ -88,6 +105,7 @@ export async function deleteGalleryItemHandler(req, res) {
   try {
     const item = await Gallery.findByIdAndDelete(req.params.id);
     if (!item) return res.status(404).json({ message: "Gallery item not found" });
+    if (item.publicId) await destroyImage(item.publicId);
     res.status(204).send();
   } catch (err) {
     res.status(500).json({ message: err.message || "Failed to delete gallery item" });

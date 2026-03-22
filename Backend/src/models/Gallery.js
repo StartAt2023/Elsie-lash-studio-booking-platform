@@ -4,6 +4,8 @@ const gallerySchema = new mongoose.Schema(
   {
     title: { type: String, required: true },
     imageUrl: { type: String, required: true },
+    /** Cloudinary public_id for delete/replace */
+    publicId: { type: String, default: "" },
     category: { type: String, default: "Classic" },
     description: { type: String, default: "" },
     active: { type: Boolean, default: true },
