@@ -3,6 +3,7 @@ import { Cormorant_Garamond, Outfit } from "next/font/google";
 import "./globals.css";
 import Header from "@/components/Header";
 import { ToastProvider } from "@/components/admin/ToastContext";
+import { Analytics } from "@vercel/analytics/next";
 
 const cormorant = Cormorant_Garamond({
   weight: ["400", "500", "600", "700"],
@@ -35,6 +36,7 @@ export default function RootLayout({
           <Header />
           {children}
         </ToastProvider>
+        <Analytics />
       </body>
     </html>
   );
