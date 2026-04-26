@@ -2,7 +2,10 @@ import type { Metadata } from "next";
 import { Cormorant_Garamond, Outfit } from "next/font/google";
 import "./globals.css";
 import Header from "@/components/Header";
+import PublicOnlyFooter from "@/components/PublicOnlyFooter";
 import { ToastProvider } from "@/components/admin/ToastContext";
+import { LocaleProvider } from "@/components/LocaleProvider";
+import { en } from "@/locales/en";
 
 const cormorant = Cormorant_Garamond({
   weight: ["400", "500", "600", "700"],
@@ -19,8 +22,8 @@ const outfit = Outfit({
 });
 
 export const metadata: Metadata = {
-  title: "Elsie Lash Studio",
-  description: "Eyelash studio booking platform",
+  title: en.meta.title,
+  description: en.meta.description,
 };
 
 export default function RootLayout({
@@ -29,12 +32,15 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${cormorant.variable} ${outfit.variable}`}>
+    <html lang="en" suppressHydrationWarning className={`${cormorant.variable} ${outfit.variable}`}>
       <body className="min-h-screen bg-cream font-sans antialiased text-charcoal">
-        <ToastProvider>
-          <Header />
-          {children}
-        </ToastProvider>
+        <LocaleProvider>
+          <ToastProvider>
+            <Header />
+            {children}
+            <PublicOnlyFooter />
+          </ToastProvider>
+        </LocaleProvider>
       </body>
     </html>
   );

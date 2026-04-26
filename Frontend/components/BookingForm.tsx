@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { createBooking, getServices, type Booking, type Service, type ApiError } from "@/lib/api";
+import { useLocale } from "@/components/LocaleProvider";
 
 const REQUIRED_SERVICE_OPTIONS = [
   "Classic Lashes",
@@ -12,9 +13,13 @@ const REQUIRED_SERVICE_OPTIONS = [
 ];
 
 export default function BookingForm() {
+  const { t, m } = useLocale();
+  const b = m.booking;
+
   const [services, setServices] = useState<Service[]>([]);
   const [formData, setFormData] = useState({
     fullName: "",
+    email: "",
     phone: "",
     service: "",
     date: "",
@@ -30,9 +35,7 @@ export default function BookingForm() {
       .catch(() => setServices([]));
   }, []);
 
-  const serviceOptions = services.length > 0
-    ? services.map((s) => s.name)
-    : REQUIRED_SERVICE_OPTIONS;
+  const serviceOptions = services.length > 0 ? services.map((s) => s.name) : REQUIRED_SERVICE_OPTIONS;
 
   function handleChange(
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
@@ -44,11 +47,11 @@ export default function BookingForm() {
 
   function validate(): string | null {
     const { fullName, phone, service, date } = formData;
-    const t = (s: string) => s.trim();
-    if (!t(fullName)) return "Please enter your full name.";
-    if (!t(phone)) return "Please enter your phone number.";
-    if (!t(service)) return "Please select a service.";
-    if (!t(date)) return "Please select a preferred date.";
+    const trim = (s: string) => s.trim();
+    if (!trim(fullName)) return b.validationName;
+    if (!trim(phone)) return b.validationPhone;
+    if (!trim(service)) return b.validationService;
+    if (!trim(date)) return b.validationDate;
     return null;
   }
 
@@ -64,6 +67,7 @@ export default function BookingForm() {
     try {
       const booking = await createBooking({
         fullName: formData.fullName.trim(),
+        email: formData.email.trim() || undefined,
         phone: formData.phone.trim(),
         service: formData.service.trim(),
         date: formData.date.trim(),
@@ -72,6 +76,7 @@ export default function BookingForm() {
       setConfirmation(booking);
       setFormData({
         fullName: "",
+        email: "",
         phone: "",
         service: "",
         date: "",
@@ -79,7 +84,7 @@ export default function BookingForm() {
       });
     } catch (err) {
       const apiErr = err as ApiError;
-      setError(apiErr?.message || "Something went wrong. Please try again.");
+      setError(apiErr?.message || b.errorGeneric);
     } finally {
       setLoading(false);
     }
@@ -87,29 +92,37 @@ export default function BookingForm() {
 
   if (confirmation) {
     return (
-      <div className="rounded-2xl border border-borderSoft/60 bg-white p-10 text-center shadow-soft sm:p-14">
+      <div className="rounded-2xl border border-borderSoft/60 bg-white p-8 text-center shadow-soft sm:p-12">
         <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-gold text-cream shadow-soft">
           <CheckIcon />
         </div>
         <h2 className="mt-8 font-serif text-2xl font-semibold tracking-tight text-charcoal sm:text-3xl">
-          Booking received
+          {b.successTitle}
         </h2>
         <p className="mt-4 leading-relaxed text-muted">
-          Thank you, {confirmation.fullName}. We&apos;ll be in touch to confirm.
+          {t("booking.successLead", { name: confirmation.fullName })}
         </p>
-        <div className="mt-6 rounded-xl border border-borderSoft/60 bg-cream/30 px-6 py-4 text-left">
-          <p className="text-sm font-medium text-charcoal">Confirmation summary</p>
-          <p className="mt-1 text-sm text-muted">Booking #{confirmation.id}</p>
-          <p className="mt-1 text-sm text-muted">Service: {confirmation.service}</p>
-          <p className="mt-1 text-sm text-muted">Preferred date: {confirmation.date}</p>
-          <p className="mt-1 text-sm text-muted">Phone: {confirmation.phone}</p>
+        <div className="mt-8 rounded-xl border border-borderSoft/60 bg-cream/40 px-6 py-5 text-left">
+          <p className="text-sm font-medium text-charcoal">{b.summaryTitle}</p>
+          <p className="mt-2 text-sm text-muted">
+            {t("booking.summaryBooking", { id: String(confirmation.id) })}
+          </p>
+          <p className="mt-1 text-sm text-muted">
+            {b.summaryService}: {confirmation.service}
+          </p>
+          <p className="mt-1 text-sm text-muted">
+            {b.summaryDate}: {confirmation.date}
+          </p>
+          <p className="mt-1 text-sm text-muted">
+            {b.summaryPhone}: {confirmation.phone}
+          </p>
         </div>
         <button
           type="button"
           onClick={() => setConfirmation(null)}
           className="mt-10 rounded-full bg-gold px-8 py-3.5 text-sm font-medium tracking-luxury text-cream shadow-soft transition hover:bg-[#b5965f] focus:outline-none focus:ring-2 focus:ring-gold focus:ring-offset-2 focus:ring-offset-cream"
         >
-          Submit another request
+          {b.another}
         </button>
       </div>
     );
@@ -118,23 +131,26 @@ export default function BookingForm() {
   return (
     <form
       onSubmit={handleSubmit}
-      className="rounded-2xl border border-borderSoft/60 bg-white p-8 shadow-soft sm:p-10"
+      className="rounded-2xl border border-borderSoft/60 bg-white p-7 shadow-soft sm:p-10"
     >
       {error && (
-        <div className="mb-6 rounded-xl border border-borderSoft/60 bg-cream/50 p-4 text-sm text-charcoal">
-          <p className="font-medium">Please fix the following:</p>
+        <div
+          className="mb-6 rounded-xl border border-amber-200/80 bg-amber-50/60 p-4 text-sm text-charcoal"
+          role="alert"
+        >
+          <p className="font-medium">{b.fixTitle}</p>
           <p className="mt-1 text-muted">{error}</p>
-          <p className="mt-2 text-muted">You can correct the details above and submit again.</p>
+          <p className="mt-2 text-muted">{b.fixHint}</p>
         </div>
       )}
 
-      <div className="space-y-8">
+      <div className="space-y-7 sm:space-y-8">
         <div>
           <label
             htmlFor="fullName"
             className="mb-2 block text-sm font-medium tracking-luxury text-charcoal"
           >
-            Full name
+            {b.labels.fullName}
           </label>
           <input
             id="fullName"
@@ -143,9 +159,30 @@ export default function BookingForm() {
             required
             value={formData.fullName}
             onChange={handleChange}
-            placeholder="Your name"
-            className="w-full rounded-xl border border-borderSoft/60 bg-cream/50 px-4 py-3.5 text-charcoal placeholder-muted focus:border-gold focus:outline-none focus:ring-2 focus:ring-gold/20"
+            placeholder={b.placeholders.name}
+            className="w-full rounded-xl border border-borderSoft/60 bg-cream/40 px-4 py-3.5 text-charcoal placeholder-muted focus:border-gold focus:outline-none focus:ring-2 focus:ring-gold/20"
           />
+        </div>
+
+        <div>
+          <label
+            htmlFor="email"
+            className="mb-2 block text-sm font-medium tracking-luxury text-charcoal"
+          >
+            {b.labels.email}
+          </label>
+          <input
+            id="email"
+            name="email"
+            type="email"
+            inputMode="email"
+            autoComplete="email"
+            value={formData.email}
+            onChange={handleChange}
+            placeholder={b.placeholders.email}
+            className="w-full rounded-xl border border-borderSoft/60 bg-cream/40 px-4 py-3.5 text-charcoal placeholder-muted focus:border-gold focus:outline-none focus:ring-2 focus:ring-gold/20"
+          />
+          <p className="mt-1.5 text-xs text-muted">{b.emailOptional}</p>
         </div>
 
         <div>
@@ -153,7 +190,7 @@ export default function BookingForm() {
             htmlFor="phone"
             className="mb-2 block text-sm font-medium tracking-luxury text-charcoal"
           >
-            Phone number
+            {b.labels.phone}
           </label>
           <input
             id="phone"
@@ -162,8 +199,8 @@ export default function BookingForm() {
             required
             value={formData.phone}
             onChange={handleChange}
-            placeholder="e.g. 0412345678 (Australia)"
-            className="w-full rounded-xl border border-borderSoft/60 bg-cream/50 px-4 py-3.5 text-charcoal placeholder-muted focus:border-gold focus:outline-none focus:ring-2 focus:ring-gold/20"
+            placeholder={b.placeholders.phone}
+            className="w-full rounded-xl border border-borderSoft/60 bg-cream/40 px-4 py-3.5 text-charcoal placeholder-muted focus:border-gold focus:outline-none focus:ring-2 focus:ring-gold/20"
           />
         </div>
 
@@ -172,7 +209,7 @@ export default function BookingForm() {
             htmlFor="service"
             className="mb-2 block text-sm font-medium tracking-luxury text-charcoal"
           >
-            Service
+            {b.labels.service}
           </label>
           <select
             id="service"
@@ -180,9 +217,9 @@ export default function BookingForm() {
             required
             value={formData.service}
             onChange={handleChange}
-            className="w-full rounded-xl border border-borderSoft/60 bg-cream/50 px-4 py-3.5 text-charcoal focus:border-gold focus:outline-none focus:ring-2 focus:ring-gold/20"
+            className="w-full rounded-xl border border-borderSoft/60 bg-cream/40 px-4 py-3.5 text-charcoal focus:border-gold focus:outline-none focus:ring-2 focus:ring-gold/20"
           >
-            <option value="">Select a service</option>
+            <option value="">{b.placeholders.service}</option>
             {serviceOptions.map((s) => (
               <option key={s} value={s}>
                 {s}
@@ -196,7 +233,7 @@ export default function BookingForm() {
             htmlFor="date"
             className="mb-2 block text-sm font-medium tracking-luxury text-charcoal"
           >
-            Preferred date
+            {b.labels.date}
           </label>
           <input
             id="date"
@@ -205,9 +242,9 @@ export default function BookingForm() {
             required
             value={formData.date}
             onChange={handleChange}
-            className="w-full rounded-xl border border-borderSoft/60 bg-cream/50 px-4 py-3.5 text-charcoal focus:border-gold focus:outline-none focus:ring-2 focus:ring-gold/20"
+            className="w-full rounded-xl border border-borderSoft/60 bg-cream/40 px-4 py-3.5 text-charcoal focus:border-gold focus:outline-none focus:ring-2 focus:ring-gold/20"
           />
-          <p className="mt-1 text-xs text-muted">Times are in Australia/Sydney.</p>
+          <p className="mt-1.5 text-xs text-muted">{b.timeZone}</p>
         </div>
 
         <div>
@@ -215,7 +252,7 @@ export default function BookingForm() {
             htmlFor="notes"
             className="mb-2 block text-sm font-medium tracking-luxury text-charcoal"
           >
-            Notes
+            {b.labels.notes}
           </label>
           <textarea
             id="notes"
@@ -223,8 +260,8 @@ export default function BookingForm() {
             rows={4}
             value={formData.notes}
             onChange={handleChange}
-            placeholder="Any special requests or questions..."
-            className="w-full resize-none rounded-xl border border-borderSoft/60 bg-cream/50 px-4 py-3.5 text-charcoal placeholder-muted focus:border-gold focus:outline-none focus:ring-2 focus:ring-gold/20"
+            placeholder={b.placeholders.notes}
+            className="w-full resize-none rounded-xl border border-borderSoft/60 bg-cream/40 px-4 py-3.5 text-charcoal placeholder-muted focus:border-gold focus:outline-none focus:ring-2 focus:ring-gold/20"
           />
         </div>
       </div>
@@ -234,7 +271,7 @@ export default function BookingForm() {
         disabled={loading}
         className="mt-10 w-full rounded-full bg-gold py-4 text-sm font-medium tracking-luxury text-cream shadow-soft transition hover:bg-[#b5965f] focus:outline-none focus:ring-2 focus:ring-gold focus:ring-offset-2 focus:ring-offset-cream disabled:opacity-60 sm:w-auto sm:px-12"
       >
-        {loading ? "Submitting…" : "Submit booking request"}
+        {loading ? b.submitting : b.submit}
       </button>
     </form>
   );

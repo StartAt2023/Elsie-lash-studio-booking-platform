@@ -1,5 +1,9 @@
 import Booking from "../models/Booking.js";
-import { sendBookingNotificationEmail } from "../services/emailService.js";
+import {
+  sendAdminBookingEmail,
+  sendCustomerConfirmationEmail,
+  isValidCustomerEmail,
+} from "../services/emailService.js";
 
 function toResponse(doc) {
   if (!doc) return null;
@@ -47,15 +51,39 @@ export async function getBooking(req, res) {
 }
 
 export async function createBookingHandler(req, res) {
-  const { fullName, phone, service, date, notes } = req.body;
+  const { fullName, phone, service, date, notes, email: emailField } = req.body;
   if (!fullName || !phone || !service || !date) {
     return res.status(400).json({ message: "fullName, phone, service and date are required" });
   }
+  const clientEmail = typeof emailField === "string" ? emailField.trim() : "";
   try {
     const booking = await Booking.create({ fullName, phone, service, date, notes: notes ?? "" });
-    sendBookingNotificationEmail(booking).catch((err) => {
-      console.error("[bookingController] Booking notification email failed:", err.message || err);
+
+    const emailPayload = {
+      fullName,
+      phone,
+      service,
+      date,
+      notes: notes ?? "",
+      email: clientEmail,
+    };
+
+    const emailTasks = [sendAdminBookingEmail(emailPayload)];
+    if (isValidCustomerEmail(clientEmail)) {
+      emailTasks.push(sendCustomerConfirmationEmail(emailPayload));
+    }
+    const emailLabels = ["admin", "customer"];
+    void Promise.allSettled(emailTasks).then((results) => {
+      results.forEach((r, i) => {
+        if (r.status === "rejected") {
+          console.error(
+            `[bookingController] ${emailLabels[i] ?? "email"} notification failed:`,
+            r.reason?.message || r.reason
+          );
+        }
+      });
     });
+
     res.status(201).json(toResponse(booking));
   } catch (err) {
     res.status(500).json({ message: err.message || "Failed to create booking" });

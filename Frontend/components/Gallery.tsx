@@ -1,10 +1,9 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
+import { useLocale } from "@/components/LocaleProvider";
 
 export type GalleryCategory = "All" | "Classic" | "Hybrid" | "Volume";
-
-const CATEGORIES: GalleryCategory[] = ["All", "Classic", "Hybrid", "Volume"];
 
 export interface GalleryItem {
   id: string;
@@ -31,28 +30,36 @@ const PLACEHOLDER_ITEMS: GalleryItem[] = [
 function ImagePlaceholderBox({ className }: { className?: string }) {
   return (
     <div
-      className={`flex items-center justify-center rounded-2xl border border-borderSoft/60 bg-white shadow-soft ${className ?? ""}`}
+      className={`flex items-center justify-center rounded-2xl border border-borderSoft/60 bg-gradient-to-b from-white to-cream/80 shadow-soft ${className ?? ""}`}
       aria-hidden
     >
-      <span className="font-serif text-4xl text-gold/50">✦</span>
+      <span className="font-serif text-4xl text-gold/40">✦</span>
     </div>
   );
 }
 
 interface GalleryProps {
-  /** Items from API (GET /api/gallery). When empty or undefined, placeholder grid is shown. */
   items?: GalleryItem[];
 }
 
 export default function Gallery({ items = [] }: GalleryProps) {
+  const { m } = useLocale();
+  const g = m.gallery;
+  const categories: { id: GalleryCategory; label: string }[] = [
+    { id: "All", label: g.categoryAll },
+    { id: "Classic", label: g.categoryClassic },
+    { id: "Hybrid", label: g.categoryHybrid },
+    { id: "Volume", label: g.categoryVolume },
+  ];
+
   const [category, setCategory] = useState<GalleryCategory>("All");
   const [lightboxItem, setLightboxItem] = useState<GalleryItem | null>(null);
 
   const list = items.length > 0 ? items : PLACEHOLDER_ITEMS;
-  const filtered =
-    category === "All"
-      ? list
-      : list.filter((item) => item.category === category);
+  const filtered = category === "All" ? list : list.filter((item) => item.category === category);
+
+  const labelFor = (cat: GalleryItem["category"]) =>
+    cat === "Classic" ? g.categoryClassic : cat === "Hybrid" ? g.categoryHybrid : g.categoryVolume;
 
   const closeLightbox = useCallback(() => setLightboxItem(null), []);
 
@@ -71,30 +78,30 @@ export default function Gallery({ items = [] }: GalleryProps) {
 
   return (
     <>
-      <div className="flex flex-wrap justify-center gap-3">
-        {CATEGORIES.map((cat) => (
+      <div className="flex flex-wrap justify-center gap-2.5 sm:gap-3">
+        {categories.map(({ id, label }) => (
           <button
-            key={cat}
+            key={id}
             type="button"
-            onClick={() => setCategory(cat)}
-            className={`rounded-full px-5 py-2.5 text-sm font-medium tracking-luxury transition ${
-              category === cat
+            onClick={() => setCategory(id)}
+            className={`rounded-full px-4 py-2.5 text-sm font-medium tracking-luxury transition sm:px-5 ${
+              category === id
                 ? "bg-gold text-cream shadow-soft"
-                : "border border-borderSoft/60 bg-white text-muted shadow-soft hover:border-gold hover:text-charcoal"
+                : "border border-borderSoft/60 bg-white text-muted shadow-soft hover:border-gold/60 hover:text-charcoal"
             }`}
           >
-            {cat}
+            {label}
           </button>
         ))}
       </div>
 
-      <div className="mt-14 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+      <div className="mt-12 grid grid-cols-1 gap-5 sm:mt-14 sm:grid-cols-2 sm:gap-6 lg:grid-cols-3">
         {filtered.map((item) => (
           <button
             key={item.id}
             type="button"
             onClick={() => setLightboxItem(item)}
-            className="group relative aspect-[4/5] w-full overflow-hidden rounded-2xl border border-borderSoft/60 bg-white shadow-soft focus:outline-none focus:ring-2 focus:ring-gold focus:ring-offset-2 focus:ring-offset-cream"
+            className="group relative aspect-[4/5] w-full overflow-hidden rounded-2xl border border-borderSoft/50 bg-white shadow-soft focus:outline-none focus-visible:ring-2 focus-visible:ring-gold focus-visible:ring-offset-2"
           >
             {item.src ? (
               <>
@@ -103,7 +110,7 @@ export default function Gallery({ items = [] }: GalleryProps) {
                   alt={item.alt}
                   className="absolute inset-0 h-full w-full object-cover transition duration-300 group-hover:scale-105"
                 />
-                <span className="absolute inset-0 bg-charcoal/0 transition group-hover:bg-charcoal/5" />
+                <span className="absolute inset-0 bg-gradient-to-t from-charcoal/20 to-transparent opacity-0 transition group-hover:opacity-100" />
               </>
             ) : (
               <ImagePlaceholderBox className="absolute inset-0 h-full w-full transition group-hover:opacity-95" />
@@ -114,17 +121,17 @@ export default function Gallery({ items = [] }: GalleryProps) {
 
       {lightboxItem && (
         <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-charcoal/70 p-5"
+          className="fixed inset-0 z-50 flex items-center justify-center bg-charcoal/75 p-5"
           role="dialog"
           aria-modal="true"
-          aria-label="Image lightbox"
+          aria-label={g.lightbox}
           onClick={closeLightbox}
         >
           <button
             type="button"
             onClick={closeLightbox}
-            className="absolute right-5 top-5 z-10 rounded-full bg-white/10 p-2.5 text-white transition hover:bg-white/20 focus:outline-none focus:ring-2 focus:ring-white"
-            aria-label="Close lightbox"
+            className="absolute right-5 top-5 z-10 rounded-full bg-white/10 p-2.5 text-white transition hover:bg-white/20 focus:outline-none focus-visible:ring-2 focus-visible:ring-white"
+            aria-label={m.common.close}
           >
             <CloseIcon />
           </button>
@@ -141,8 +148,8 @@ export default function Gallery({ items = [] }: GalleryProps) {
             ) : (
               <ImagePlaceholderBox className="aspect-[4/5] w-full max-w-md rounded-2xl sm:max-w-lg" />
             )}
-            <p className="mt-4 text-center text-sm text-white/80">
-              {lightboxItem.category} — {lightboxItem.alt}
+            <p className="mt-4 text-center text-sm text-white/90">
+              {labelFor(lightboxItem.category)} — {lightboxItem.alt}
             </p>
           </div>
         </div>

@@ -192,6 +192,8 @@ export interface CreateBookingBody {
   service: string;
   date: string;
   notes?: string;
+  /** If valid, backend sends a confirmation email. Optional. */
+  email?: string;
 }
 
 export interface UpdateBookingBody {

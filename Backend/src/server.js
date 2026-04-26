@@ -1,3 +1,6 @@
+// Load .env before any other app modules (routes may import services that read process.env at load time).
+import "dotenv/config";
+
 import express from "express";
 import cors from "cors";
 

@@ -1,218 +1,173 @@
+"use client";
+
 import Link from "next/link";
-
-const featuredServices = [
-  {
-    title: "Classic Lashes",
-    description: "Natural, elegant extensions for everyday glamour.",
-    href: "/services",
-  },
-  {
-    title: "Volume Lashes",
-    description: "Full, fluffy look with lightweight multi-dimensional fans.",
-    href: "/services",
-  },
-  {
-    title: "Lash Lift & Tint",
-    description: "Lift and define your natural lashes with a lasting curl.",
-    href: "/services",
-  },
-];
-
-const testimonials = [
-  {
-    quote:
-      "问一下之前顾客体验怎么样",
-    author: "顾客名字",
-  },
-  {
-    quote:
-      "Elsie is incredibly skilled and the studio is so relaxing. I won't go anywhere else.",
-    author: "我让我姐跟你说这个哈哈哈哈哈哈哈哈哈",
-  },
-  {
-    quote:
-      "My lashes look amazing and last forever. Professional, clean, and friendly.",
-    author: "我跟你说这个哈哈哈哈哈哈",
-  },
-];
+import { useLocale } from "@/components/LocaleProvider";
+import { SectionTitle } from "@/components/SectionTitle";
+import CTAButton from "@/components/CTAButton";
 
 export default function HomePage() {
+  const { m } = useLocale();
+  const { home: h } = m;
+
+  const featured = [
+    { key: "classic" as const, href: "/services" },
+    { key: "volume" as const, href: "/services" },
+    { key: "lift" as const, href: "/services" },
+  ];
+
   return (
     <main className="min-h-screen bg-cream">
-      {/* Hero — minimal, lots of space */}
-      <section className="px-5 py-28 sm:py-36 md:py-44">
-        <div className="mx-auto max-w-3xl text-center">
+      <section className="relative overflow-hidden px-5 pb-28 pt-24 sm:pb-36 sm:pt-32 md:pb-44 md:pt-40">
+        <div
+          className="pointer-events-none absolute inset-0 opacity-[0.35]"
+          aria-hidden
+          style={{
+            background:
+              "radial-gradient(ellipse 80% 50% at 50% -20%, rgba(198, 167, 110, 0.18), transparent 60%)",
+          }}
+        />
+        <div className="relative mx-auto max-w-3xl text-center">
           <p className="font-serif text-xs font-medium uppercase tracking-luxury-wide text-muted sm:text-sm">
-            Luxury lash studio
+            {h.heroKicker}
           </p>
-          <h1 className="mt-8 font-serif text-4xl font-semibold leading-tight tracking-tight text-charcoal sm:text-5xl md:text-6xl">
-            Beautiful lashes,{" "}
-            <span className="text-gold">beautiful you</span>
+          <h1 className="mt-6 font-serif text-4xl font-semibold leading-[1.12] tracking-tight text-charcoal sm:text-5xl md:text-6xl">
+            {h.heroTitle}{" "}
+            <span className="text-gold">{h.heroTitleAccent}</span>
           </h1>
-          <p className="mx-auto mt-8 max-w-lg text-lg leading-relaxed text-muted">
-            Expert lash extensions and lifts in a serene, professional space.
-            Book your appointment today.
+          <p className="mx-auto mt-8 max-w-xl text-lg leading-relaxed text-muted md:text-xl">
+            {h.heroSubtitle}
           </p>
-          <div className="mt-14">
-            <Link
-              href="/booking"
-              className="inline-block rounded-full bg-gold px-10 py-4 text-sm font-medium tracking-luxury text-cream shadow-soft transition hover:bg-[#b5965f] focus:outline-none focus:ring-2 focus:ring-gold focus:ring-offset-2 focus:ring-offset-cream"
-            >
-              Book Your Appointment
-            </Link>
+          <div className="mt-12 flex flex-col items-center gap-4 sm:mt-14 sm:flex-row sm:justify-center">
+            <CTAButton href="/booking" variant="primary">
+              {h.heroCta}
+            </CTAButton>
+            <CTAButton href="/services" variant="secondary">
+              {h.browseServicesCta}
+            </CTAButton>
           </div>
         </div>
       </section>
 
-      {/* Featured Services */}
       <section className="border-t border-borderSoft/80 px-5 py-24 sm:py-32">
-        <div className="mx-auto max-w-5xl">
-          <p className="font-serif text-xs font-medium uppercase tracking-luxury-wide text-muted">
-            Services
-          </p>
-          <h2 className="mt-3 font-serif text-3xl font-semibold tracking-tight text-charcoal sm:text-4xl">
-            Featured treatments
-          </h2>
-          <p className="mt-4 max-w-xl text-muted">
-            Discover our most loved lash treatments.
-          </p>
-          <div className="mt-16 grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
-            {featuredServices.map((service) => (
-              <Link
-                key={service.title}
-                href={service.href}
-                className="group block rounded-2xl border border-borderSoft/60 bg-white p-8 shadow-soft transition hover:shadow-cardHover"
-              >
-                <h3 className="font-serif text-xl font-semibold tracking-tight text-charcoal group-hover:text-gold transition-colors">
-                  {service.title}
-                </h3>
-                <p className="mt-4 leading-relaxed text-muted">
-                  {service.description}
-                </p>
-                <span className="mt-6 inline-block text-sm font-medium text-gold">
-                  Learn more →
-                </span>
-              </Link>
-            ))}
+        <div className="mx-auto max-w-6xl">
+          <SectionTitle
+            kicker={h.servicesKicker}
+            title={h.servicesTitle}
+            lead={h.servicesLead}
+          />
+          <div className="mt-14 grid gap-6 sm:grid-cols-2 lg:grid-cols-3 lg:gap-8">
+            {featured.map(({ key, href }) => {
+              const item = h.featured[key];
+              return (
+                <Link
+                  key={key}
+                  href={href}
+                  className="group flex flex-col rounded-2xl border border-borderSoft/60 bg-white p-8 shadow-soft transition duration-200 hover:-translate-y-0.5 hover:shadow-cardHover"
+                >
+                  <h3 className="font-serif text-xl font-semibold tracking-tight text-charcoal transition group-hover:text-gold">
+                    {item.title}
+                  </h3>
+                  <p className="mt-4 flex-1 leading-relaxed text-muted">{item.desc}</p>
+                  <span className="mt-6 text-sm font-medium text-gold">
+                    {m.common.learnMore} →
+                  </span>
+                </Link>
+              );
+            })}
           </div>
-          <div className="mt-16 text-center">
+          <div className="mt-14 text-center">
             <Link
               href="/services"
-              className="text-sm font-medium text-gold hover:underline"
+              className="text-sm font-medium text-gold underline-offset-4 transition hover:underline"
             >
-              View all services
+              {h.servicesViewAll}
             </Link>
           </div>
         </div>
       </section>
 
-      {/* Gallery Preview */}
       <section className="border-t border-borderSoft/80 px-5 py-24 sm:py-32">
-        <div className="mx-auto max-w-5xl">
-          <p className="font-serif text-xs font-medium uppercase tracking-luxury-wide text-muted">
-            Portfolio
-          </p>
-          <h2 className="mt-3 font-serif text-3xl font-semibold tracking-tight text-charcoal sm:text-4xl">
-            Our work
-          </h2>
-          <p className="mt-4 max-w-xl text-muted">
-            A glimpse of the looks we create.
-          </p>
-          <div className="mt-16 grid grid-cols-2 gap-5 sm:gap-6 md:grid-cols-3">
+        <div className="mx-auto max-w-6xl">
+          <SectionTitle
+            kicker={h.portfolioKicker}
+            title={h.portfolioTitle}
+            lead={h.portfolioLead}
+          />
+          <div className="mt-14 grid grid-cols-2 gap-4 sm:gap-6 md:grid-cols-3">
             {Array.from({ length: 6 }).map((_, i) => (
               <div
                 key={i}
-                className="flex aspect-[3/4] items-center justify-center rounded-2xl border border-borderSoft/60 bg-white shadow-soft"
+                className="flex aspect-[3/4] items-center justify-center rounded-2xl border border-borderSoft/50 bg-gradient-to-b from-white to-cream/80 shadow-soft"
                 aria-hidden
               >
-                <span className="font-serif text-4xl text-gold/50">✦</span>
+                <span className="font-serif text-4xl text-gold/40">✦</span>
               </div>
             ))}
           </div>
-          <div className="mt-16 text-center">
-            <Link
-              href="/gallery"
-              className="inline-block rounded-full border border-borderSoft bg-white px-8 py-3.5 text-sm font-medium text-charcoal shadow-soft transition hover:border-gold hover:text-gold"
-            >
-              View full gallery
-            </Link>
+          <div className="mt-14 text-center">
+            <CTAButton href="/gallery" variant="secondary">
+              {h.viewGallery}
+            </CTAButton>
           </div>
         </div>
       </section>
 
-      {/* Testimonials */}
       <section className="border-t border-borderSoft/80 px-5 py-24 sm:py-32">
-        <div className="mx-auto max-w-5xl">
-          <p className="font-serif text-xs font-medium uppercase tracking-luxury-wide text-muted">
-            Testimonials
-          </p>
-          <h2 className="mt-3 font-serif text-3xl font-semibold tracking-tight text-charcoal sm:text-4xl">
-            What clients say
-          </h2>
-          <p className="mt-4 max-w-xl text-muted">
-            Real experiences from our community.
-          </p>
-          <div className="mt-16 grid gap-8 md:grid-cols-3">
-            {testimonials.map(({ quote, author }) => (
+        <div className="mx-auto max-w-6xl">
+          <SectionTitle
+            kicker={h.testimonialKicker}
+            title={h.testimonialTitle}
+            lead={h.testimonialLead}
+          />
+          <div className="mt-14 grid gap-6 md:grid-cols-3 md:gap-8">
+            {h.testimonials.map((row: { quote: string; author: string }, i: number) => (
               <blockquote
-                key={author}
-                className="rounded-2xl border border-borderSoft/60 bg-white p-8 shadow-soft"
+                key={i}
+                className="flex h-full flex-col rounded-2xl border border-borderSoft/60 bg-white p-8 shadow-soft"
               >
                 <p className="font-serif text-lg italic leading-relaxed text-charcoal">
-                  &ldquo;{quote}&rdquo;
+                  &ldquo;{row.quote}&rdquo;
                 </p>
-                <footer className="mt-6 text-sm font-medium text-muted">
-                  — {author}
-                </footer>
+                <footer className="mt-6 text-sm font-medium text-muted">— {row.author}</footer>
               </blockquote>
             ))}
           </div>
         </div>
       </section>
 
-      {/* Contact */}
       <section className="border-t border-borderSoft/80 px-5 py-24 sm:py-32">
         <div className="mx-auto max-w-2xl text-center">
           <p className="font-serif text-xs font-medium uppercase tracking-luxury-wide text-muted">
-            Contact
+            {h.contactKicker}
           </p>
           <h2 className="mt-3 font-serif text-3xl font-semibold tracking-tight text-charcoal sm:text-4xl">
-            Get in touch
+            {h.contactTitle}
           </h2>
-          <p className="mt-4 text-muted">
-            We&apos;d love to hear from you.
-          </p>
-          <div className="mt-14 flex flex-col items-center justify-center gap-6 sm:flex-row sm:gap-10">
+          <p className="mt-4 text-muted">{h.contactLead}</p>
+          <div className="mt-12 flex flex-col items-stretch justify-center gap-4 sm:flex-row sm:items-center sm:gap-8">
             <a
-              href="tel:+15551234567"
-              className="flex items-center gap-4 rounded-2xl border border-borderSoft/60 bg-white px-8 py-5 shadow-soft transition hover:shadow-card"
+              href={`tel:${h.contactPhone.replace(/\s/g, "")}`}
+              className="flex items-center gap-4 rounded-2xl border border-borderSoft/60 bg-white px-6 py-5 text-left shadow-soft transition hover:shadow-card sm:min-w-[260px]"
             >
-              <span className="flex h-12 w-12 items-center justify-center rounded-full bg-cream text-gold">
+              <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-cream text-gold">
                 <PhoneIcon />
               </span>
-              <span className="font-medium text-charcoal">0423861689</span>
+              <span className="font-medium text-charcoal">{h.contactPhone}</span>
             </a>
             <a
               href="https://instagram.com"
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center gap-4 rounded-2xl border border-borderSoft/60 bg-white px-8 py-5 shadow-soft transition hover:shadow-card"
+              className="flex items-center gap-4 rounded-2xl border border-borderSoft/60 bg-white px-6 py-5 text-left shadow-soft transition hover:shadow-card sm:min-w-[260px]"
             >
-              <span className="flex h-12 w-12 items-center justify-center rounded-full bg-cream text-gold">
+              <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-cream text-gold">
                 <InstagramIcon />
               </span>
-              <span className="font-medium text-charcoal">@有需要的话可以把你的instagram账号写在这里</span>
+              <span className="min-w-0 break-words font-medium text-charcoal">{h.contactInstagram}</span>
             </a>
           </div>
         </div>
       </section>
-
-      {/* Footer */}
-      <footer className="border-t border-borderSoft/80 px-5 py-12">
-        <div className="mx-auto max-w-5xl text-center text-sm text-muted">
-          © {new Date().getFullYear()} Elsie Lash Studio. All rights reserved.
-        </div>
-      </footer>
     </main>
   );
 }
